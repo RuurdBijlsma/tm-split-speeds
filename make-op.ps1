@@ -5,6 +5,7 @@ $compress = @{
 }
 Compress-Archive @compress -Force
 
-Rename-Item -Path "../SplitSpeeds.zip" -NewName "SplitSpeeds.op"
+Move-Item -Path "../SplitSpeeds.zip" -Destination "../SplitSpeeds.op" -Force
 
+Write-Host("Done!")
 $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
