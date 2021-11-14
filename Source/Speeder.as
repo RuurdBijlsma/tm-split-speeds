@@ -11,41 +11,53 @@ class Speeder{
     
     MapSpeeds currentSpeeds = MapSpeeds();
     MapSpeeds bestSpeeds = MapSpeeds();
+    GUI gui = GUI();
     uint bestTime = 0;
     uint lapCount = 0;
     uint lastRaceTime = 0;
+    uint64 showStartTime = 0;
+    CGameCtnApp@ app = GetApp();
 
-    void Init(){
-        print("Initialize speeder");
+    Speeder(){
+        
     }
 
     void Tick(){
-        auto app = GetApp();
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
-        auto terminal = playground.GameTerminals[0];
-        auto uiSequence = terminal.UISequence_Current;
-
-        if((uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish) && !handledFinish){
-            auto pb = bestSpeeds.getPb();
-            handledFinish = true;
-            if(lastRaceTime < pb || pb == 0){
-                bestSpeeds = currentSpeeds;
-                currentSpeeds.ToFile(lastRaceTime);
-                print('New PB! time = ' + lastRaceTime);
-            }
-        }
-        if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
-            handledFinish = false;
-        }
-
-        auto player = cast<CSmPlayer>(terminal.GUIPlayer);
 
         if(playground is null
             || playground.Arena is null
             || playground.Map is null
-            || playground.GameTerminals.Length <= 0
-            || uiSequence != CGamePlaygroundUIConfig::EUISequence::Playing
-            || player is null) {
+            || playground.GameTerminals.Length <= 0){
+                inGame=false;
+                return;
+            }
+
+
+        auto terminal = playground.GameTerminals[0];
+        auto player = cast<CSmPlayer>(terminal.GUIPlayer);
+        auto uiSequence = terminal.UISequence_Current;
+
+        if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !handledFinish && player !is null){
+            auto pb = bestSpeeds.getPb();
+            handledFinish = true;
+            if(lastRaceTime < pb || pb == 0){
+                currentSpeeds.ToFile(lastRaceTime);
+                bestSpeeds = currentSpeeds;
+                // print('New PB! time = ' + lastRaceTime);
+            }
+        }
+
+        uint64 nowTime = Time::get_Now();
+        gui.guiHidden = playground.Interface !is null && Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0;
+        gui.showDiff = showStartTime + 3000 > nowTime;
+        gui.Render();
+
+        if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
+            handledFinish = false;
+        }
+
+        if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Playing || player is null) {
             inGame = false;
             return;
         }
@@ -70,7 +82,7 @@ class Speeder{
             curMap = playground.Map.IdName;
             bestSpeeds = MapSpeeds(curMap);
             currentSpeeds = MapSpeeds(curMap, false);
-            print("Map change! Current PB = " + bestSpeeds.getPb());
+            print("[SplitSpeeds] Map change! Current PB = " + bestSpeeds.getPb());
             if(playground.Map.TMObjective_IsLapRace)
                 lapCount = playground.Map.TMObjective_NbLaps;
             else
@@ -114,21 +126,30 @@ class Speeder{
 
             // total cp count is all cps + the start/finish counts as 1 per lap
             auto totalCpCount = lapCount * (maxCP + 1);
-            print("YEP CP");
 
             auto vis = GetVehicleVis(app);
             if(vis is null)
                 return;
-            float speed = vis.AsyncState.FrontSpeed* 3.6f;
+            float speed = vis.AsyncState.WorldVel.Length() * 3.6f;
 
             if(landmarks[preCPIdx].Waypoint is null) {
                 curCP = 0;
-                print("Start");
             }else{
                 curCP++;
             }
-            auto pbSpeed = bestSpeeds.GetCp(curCP);
-            print("CP " + curCP + ", speed = " + speed + ", pb speed = " + pbSpeed + ', diff = ' + (speed - pbSpeed));
+            gui.currentSpeed = speed;
+            if(bestSpeeds.HasCp(curCP)){
+                auto pbSpeed = bestSpeeds.GetCp(curCP);
+                gui.hasDiff = true;
+                gui.difference = speed - pbSpeed;
+                // print("curspeed = " + speed + ", pb speed = " + pbSpeed);
+            }else{
+                gui.hasDiff = false;
+            }
+            if(curCP != 0)
+                showStartTime = nowTime;
+            else
+                showStartTime = 0;
             currentSpeeds.SetCp(curCP, speed);
         }
     }
@@ -144,10 +165,8 @@ class Speeder{
     CSceneVehicleVis@ GetVehicleVis(CGameCtnApp@ app) {
         auto sceneVis = app.GameScene;
         if (sceneVis is null) {
-            print("Scene vis is null");
             return null;
         }
-        // print("Scene vis is not null");
         CSceneVehicleVis@ vis = null;
 
         auto player = GetViewingPlayer();
@@ -158,10 +177,8 @@ class Speeder{
         }
 
         if (vis is null) {
-            print("Vis is null");
             return null;
         }
-        // print("Vis is not null");
         return vis;
     }
 }

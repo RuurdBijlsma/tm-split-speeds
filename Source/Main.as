@@ -1,10 +1,8 @@
 // TODO:
-// Optimizations!
-// GUI
+// Hide gui when * is toggled
 void Main()
 {
     auto speeder = Speeder();
-    speeder.Init();
     while(true){
         speeder.Tick();
         yield();
