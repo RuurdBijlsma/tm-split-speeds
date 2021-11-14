@@ -1,0 +1,12 @@
+[meta]
+name = "Split Speeds"
+author = "RuteNL"
+category = "Overlay"
+
+siteid = 000
+version = "0.1.0"
+
+blocks = [ "Plugin_SplitSpeeds" ]
+
+[script]
+imports = [ "Icons.as" ]
