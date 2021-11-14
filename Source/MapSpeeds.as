@@ -13,7 +13,7 @@ class MapSpeeds{
 
 
         string baseFolder = IO::FromDataFolder('');
-        string folder = baseFolder + '/' + 'splitspeeds';
+        string folder = baseFolder + 'splitspeeds';
         if(!IO::FolderExists(folder)){
             IO::CreateFolder(folder);
             print("[SplitSpeeds] Created folder: " + folder);

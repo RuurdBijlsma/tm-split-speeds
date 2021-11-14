@@ -110,29 +110,31 @@ class Speeder{
         }
 
         inGame = true;
-
         if(preCPIdx != player.CurrentLaunchedRespawnLandmarkIndex && 
             landmarks.Length > player.CurrentLaunchedRespawnLandmarkIndex) {
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
 
-            auto vis = GetVehicleVis(app);
-            if(vis is null)
-                return;
-            float speed = vis.AsyncState.WorldVel.Length() * 3.6f;
-
+            // print("CP YEP, " + preCPIdx);
             if(landmarks[preCPIdx].Waypoint is null) {
                 curCP = 0;
             }else{
                 curCP++;
             }
+
+            auto vis = GetVehicleVis(app);
+            if(vis is null){
+                return;
+            }
+            float speed = vis.AsyncState.WorldVel.Length() * 3.6f;
             gui.currentSpeed = speed;
             if(bestSpeeds.HasCp(curCP)){
                 auto pbSpeed = bestSpeeds.GetCp(curCP);
                 gui.hasDiff = true;
                 gui.difference = speed - pbSpeed;
-                // print("curspeed = " + speed + ", pb speed = " + pbSpeed);
+                // print("cp = " + curCP + ", curspeed = " + speed + ", pb speed = " + pbSpeed);
             }else{
                 gui.hasDiff = false;
+                // print("cp = " + curCP + ", curspeed = " + speed + ", NO PB FOUND");
             }
             if(curCP != 0)
                 showStartTime = nowTime;
