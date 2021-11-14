@@ -1,7 +1,7 @@
-Speeder@ speeder = null;
+Speeder speeder;
 
 void Main(){
-    @speeder = Speeder();
+    speeder = Speeder();
 }
 
 void Update(float dt){
