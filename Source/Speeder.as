@@ -1,3 +1,6 @@
+// Checkpoint counting logic by Phlarx:
+// https://github.com/Phlarx/tm-checkpoint-counter
+
 class Speeder{
     bool inGame = false;
     bool strictMode = false;

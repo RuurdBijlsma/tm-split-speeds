@@ -1,6 +1,3 @@
-// TODO:
-// Hide gui when * is toggled
-
 Speeder@ speeder = null;
 
 void Main(){
