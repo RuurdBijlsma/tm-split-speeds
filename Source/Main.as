@@ -1,10 +1,18 @@
 // TODO:
 // Hide gui when * is toggled
-void Main()
-{
-    auto speeder = Speeder();
-    while(true){
+
+Speeder@ speeder = null;
+
+void Main(){
+    @speeder = Speeder();
+}
+
+void Update(float dt){
+    if(speeder !is null)
         speeder.Tick();
-        yield();
-    }
+}
+
+void RenderInterface(){
+    if(speeder !is null)
+        speeder.gui.Render();
 }

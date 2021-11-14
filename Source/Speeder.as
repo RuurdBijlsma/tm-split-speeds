@@ -3,7 +3,6 @@ class Speeder{
     bool strictMode = false;
 
     string curMap = "";
-
     uint preCPIdx = 0;
     uint curCP = 0;
     uint maxCP = 0;
@@ -12,15 +11,9 @@ class Speeder{
     MapSpeeds currentSpeeds = MapSpeeds();
     MapSpeeds bestSpeeds = MapSpeeds();
     GUI gui = GUI();
-    uint bestTime = 0;
-    uint lapCount = 0;
     uint lastRaceTime = 0;
     uint64 showStartTime = 0;
     CGameCtnApp@ app = GetApp();
-
-    Speeder(){
-        
-    }
 
     void Tick(){
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
@@ -51,7 +44,6 @@ class Speeder{
         uint64 nowTime = Time::get_Now();
         gui.guiHidden = playground.Interface !is null && Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0;
         gui.showDiff = showStartTime + 3000 > nowTime;
-        gui.Render();
 
         if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
             handledFinish = false;
@@ -83,10 +75,6 @@ class Speeder{
             bestSpeeds = MapSpeeds(curMap);
             currentSpeeds = MapSpeeds(curMap, false);
             print("[SplitSpeeds] Map change! Current PB = " + bestSpeeds.getPb());
-            if(playground.Map.TMObjective_IsLapRace)
-                lapCount = playground.Map.TMObjective_NbLaps;
-            else
-                lapCount = 1;
 
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
             curCP = 0;
@@ -123,9 +111,6 @@ class Speeder{
         if(preCPIdx != player.CurrentLaunchedRespawnLandmarkIndex && 
             landmarks.Length > player.CurrentLaunchedRespawnLandmarkIndex) {
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
-
-            // total cp count is all cps + the start/finish counts as 1 per lap
-            auto totalCpCount = lapCount * (maxCP + 1);
 
             auto vis = GetVehicleVis(app);
             if(vis is null)

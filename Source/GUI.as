@@ -10,6 +10,9 @@ float anchorX = .49458;
 [Setting name="Anchor Y position" min=0 max=1]
 float anchorY = .249;
 
+[Setting name="Use native TM colours (blue / red)"]
+bool nativeColours = false;
+
 [Setting color name="Faster than pb colour"]
 vec4 fasterColour = vec4(0, .63, .12, .75);
 
@@ -39,6 +42,11 @@ class GUI{
     }
 
     void Render(){
+        if(nativeColours){
+            fasterColour = vec4(0, .15, 1, .75);
+            slowerColour = vec4(.83, 0, 0, .75);
+        }
+
         if(!showDiff || guiHidden)
             return;
         uint box1Width = 67;
