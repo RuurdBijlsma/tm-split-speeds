@@ -35,6 +35,8 @@ class Speeder{
         auto uiSequence = terminal.UISequence_Current;
 
         if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !handledFinish && player !is null){
+            // Show ui for 1s after finishing
+            showStartTime = Time::get_Now() - 2000;
             auto pb = bestSpeeds.getPb();
             handledFinish = true;
             if(lastRaceTime < pb || pb == 0){
