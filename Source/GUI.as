@@ -10,6 +10,9 @@ float anchorX = .49458;
 [Setting name="Anchor Y position" min=0 max=1]
 float anchorY = .249;
 
+[Setting name="Show when GUI is hidden"]
+bool showWhenGuiHidden = false;
+
 [Setting name="Use native TM colours (blue / red)"]
 bool nativeColours = false;
 
@@ -23,7 +26,7 @@ vec4 sameSpeedColour = vec4(.5, .5, .5, .75);
 
 vec4 textBgColour = vec4(0, 0, 0, 0.86);
 vec4 textColour = vec4(1, 1, 1, 1);
-vec4 shadowColour = vec4( 0, 0, 0, .5);
+vec4 shadowColour = vec4(0, 0, 0, .5);
 Resources::Font@ font;
 
 int shadowX = 1;
@@ -47,7 +50,7 @@ class GUI{
             slowerColour = vec4(.83, 0, 0, .75);
         }
 
-        if(!showDiff || guiHidden)
+        if(!showDiff || (guiHidden && !showWhenGuiHidden))
             return;
         uint box1Width = 67;
         uint box2Width = 78;
@@ -68,8 +71,8 @@ class GUI{
             string text = Text::Format("%.0f", currentSpeed);
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             nvg::FontSize(fontSize);
-            nvg::FillColor(shadowColour);
-            nvg::TextBox(x - box1Width + shadowX, y + boxHeight / 2 + shadowY, box1Width - padding, text);
+            // nvg::FillColor(shadowColour);
+            // nvg::TextBox(x - box1Width + shadowX, y + boxHeight / 2 + shadowY, box1Width - padding, text);
             nvg::FillColor(textColour);
             nvg::TextBox(x - box1Width, y + boxHeight / 2, box1Width - padding, text);
         }
@@ -93,8 +96,8 @@ class GUI{
                 text = '0';
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             nvg::FontSize(fontSize);
-            nvg::FillColor(shadowColour);
-            nvg::TextBox(x + shadowX, y + boxHeight / 2 + shadowY, box2Width - padding, text);
+            // nvg::FillColor(shadowColour);
+            // nvg::TextBox(x + shadowX, y + boxHeight / 2 + shadowY, box2Width - padding, text);
             nvg::FillColor(textColour);
             nvg::TextBox(x, y + boxHeight / 2, box2Width - padding, text);
         }
