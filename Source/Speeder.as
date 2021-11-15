@@ -29,7 +29,6 @@ class Speeder{
                 return;
             }
 
-
         auto terminal = playground.GameTerminals[0];
         auto player = cast<CSmPlayer>(terminal.GUIPlayer);
         auto uiSequence = terminal.UISequence_Current;
@@ -42,6 +41,7 @@ class Speeder{
             if(lastRaceTime < pb || pb == 0){
                 currentSpeeds.ToFile(lastRaceTime);
                 bestSpeeds = currentSpeeds;
+                currentSpeeds = MapSpeeds(curMap, false);
                 // print('New PB! time = ' + lastRaceTime);
             }
         }

@@ -11,7 +11,6 @@ class MapSpeeds{
     MapSpeeds(string mapIdentifier, bool loadFromFile = true){
         if(mapIdentifier == '') return;
 
-
         string baseFolder = IO::FromDataFolder('');
         string folder = baseFolder + 'splitspeeds';
         if(!IO::FolderExists(folder)){
