@@ -4,6 +4,8 @@ class MapSpeeds{
     string pbKey = 'pb';
     Json::Value speeds = Json::Object();
 
+    string folder = '';
+
     MapSpeeds(){
 
     }
@@ -12,7 +14,7 @@ class MapSpeeds{
         if(mapIdentifier == '') return;
 
         string baseFolder = IO::FromDataFolder('');
-        string folder = baseFolder + 'splitspeeds';
+        folder = baseFolder + 'splitspeeds';
         if(!IO::FolderExists(folder)){
             IO::CreateFolder(folder);
             print("[SplitSpeeds] Created folder: " + folder);
@@ -24,6 +26,11 @@ class MapSpeeds{
             // print("Reading map speeds from file: " + jsonFile);
             FromFile();
         }
+    }
+
+    void Clear(){
+        speeds = Json::Object();
+        ToFile(0);
     }
 
     float GetCp(uint cpId){
@@ -62,7 +69,7 @@ class MapSpeeds{
 
     void ToFile(uint pbTime){
         speeds[pbKey] = pbTime;
-        print("[SplitSpeeds] Saving new pb to file: " + jsonFile);
+        print("[SplitSpeeds] Saving new pb (" + pbTime + ") to file: " + jsonFile);
         Json::ToFile(jsonFile, speeds);
     }
 }

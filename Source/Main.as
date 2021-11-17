@@ -1,5 +1,8 @@
 Speeder speeder;
 
+// todo:
+// setting to only show splits when synced to ghost
+
 void Main(){
     speeder = Speeder();
 }
@@ -9,7 +12,24 @@ void Update(float dt){
         speeder.Tick();
 }
 
-void RenderInterface(){
+void Render(){
     if(speeder !is null)
         speeder.gui.Render();
+}
+
+[Setting category="Advanced Settings"]
+void RenderSettings(){
+    AdvSettings::Render(speeder);
+}
+
+void RenderMenu()
+{
+	if (UI::MenuItem("\\$f70" + Icons::Registered + "\\$z Speed Splits", "", speeder.gui.visible)) {
+		speeder.gui.visible = !speeder.gui.visible;
+	}
+}
+
+void OnSettingsChanged(){
+    // Show ui for 3 seconds to see effect of settings changes
+    speeder.showStartTime = Time::get_Now();
 }

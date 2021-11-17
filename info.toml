@@ -2,5 +2,9 @@
 name = "Split Speeds"
 author = "RuteNL"
 category = "Overlay"
+siteid = 145
 
-version = "0.2.3"
+version = "0.2.4"
+
+[script]
+imports = [ "Icons.as" ]

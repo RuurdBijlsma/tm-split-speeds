@@ -21,6 +21,10 @@ class Speeder{
     void Tick(){
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
 
+        uint64 nowTime = Time::get_Now();
+        gui.guiHidden = playground.Interface is null || Dev::GetOffsetUint32(playground.Interface, 0x1C) == 0;
+        gui.showDiff = showStartTime + 3000 > nowTime;
+
         if(playground is null
             || playground.Arena is null
             || playground.Map is null
@@ -45,10 +49,6 @@ class Speeder{
                 // print('New PB! time = ' + lastRaceTime);
             }
         }
-
-        uint64 nowTime = Time::get_Now();
-        gui.guiHidden = playground.Interface !is null && Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0;
-        gui.showDiff = showStartTime + 3000 > nowTime;
 
         if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
             handledFinish = false;
@@ -146,20 +146,46 @@ class Speeder{
         }
     }
 
-    CSmPlayer@ GetViewingPlayer() {
-        auto playground = GetApp().CurrentPlayground;
-        if (playground is null || playground.GameTerminals.Length != 1) {
-            return null;
-        }
-        return cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer);
-    }
+#if TMNEXT
+	CSmPlayer@ GetViewingPlayer()
+	{
+		auto playground = GetApp().CurrentPlayground;
+		if (playground is null || playground.GameTerminals.Length != 1) {
+			return null;
+		}
+		return cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer);
+	}
+#elif TURBO
+	CGameMobil@ GetViewingPlayer()
+	{
+		auto playground = cast<CTrackManiaRace>(GetApp().CurrentPlayground);
+		if (playground is null) {
+			return null;
+		}
+		return playground.LocalPlayerMobil;
+	}
+#elif MP4
+	CGamePlayer@ GetViewingPlayer()
+	{
+		auto playground = GetApp().CurrentPlayground;
+		if (playground is null || playground.GameTerminals.Length != 1) {
+			return null;
+		}
+		return playground.GameTerminals[0].GUIPlayer;
+	}
+#endif
 
     CSceneVehicleVis@ GetVehicleVis(CGameCtnApp@ app) {
-        auto sceneVis = app.GameScene;
-        if (sceneVis is null) {
-            return null;
-        }
-        CSceneVehicleVis@ vis = null;
+#if !MP4
+		auto sceneVis = app.GameScene;
+		if (sceneVis is null) {
+			return null;
+		}
+		CSceneVehicleVis@ vis = null;
+#else
+		CGameScene@ sceneVis = null;
+		CSceneVehicleVisInner@ vis = null;
+#endif
 
         auto player = GetViewingPlayer();
         if (player !is null) {
