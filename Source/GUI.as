@@ -90,7 +90,7 @@ class GUI{
             nvg::FontSize(scale * fontSize - 5);
             textOffsetY = 2;
             y += 17;
-        }else{
+        } else {
             nvg::FontSize(scale * fontSize);
         }
 

@@ -55,7 +55,7 @@ class MapSpeeds{
             if(content == "" || content == "null"){
                 warn("[SplitSpeeds] Invalid SplitSpeeds file detected");
                 speeds = Json::Object();
-            }else{
+            } else {
                 speeds = Json::FromFile(jsonFile);
             }
         }

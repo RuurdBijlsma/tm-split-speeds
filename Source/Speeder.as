@@ -22,14 +22,16 @@ class Speeder{
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
 
         uint64 nowTime = Time::get_Now();
-        gui.guiHidden = playground.Interface is null || Dev::GetOffsetUint32(playground.Interface, 0x1C) == 0;
+        gui.guiHidden = playground is null || 
+            playground.Interface is null || 
+            Dev::GetOffsetUint32(playground.Interface, 0x1C) == 0;
         gui.showDiff = showStartTime + 3000 > nowTime;
 
         if(playground is null
             || playground.Arena is null
             || playground.Map is null
             || playground.GameTerminals.Length <= 0){
-                inGame=false;
+                inGame = false;
                 return;
             }
 
@@ -119,7 +121,7 @@ class Speeder{
             // print("CP YEP, " + preCPIdx);
             if(landmarks[preCPIdx].Waypoint is null) {
                 curCP = 0;
-            }else{
+            } else {
                 curCP++;
             }
 
@@ -134,7 +136,7 @@ class Speeder{
                 gui.hasDiff = true;
                 gui.difference = speed - pbSpeed;
                 // print("cp = " + curCP + ", curspeed = " + speed + ", pb speed = " + pbSpeed);
-            }else{
+            } else {
                 gui.hasDiff = false;
                 // print("cp = " + curCP + ", curspeed = " + speed + ", NO PB FOUND");
             }
@@ -143,6 +145,30 @@ class Speeder{
             else
                 showStartTime = 0;
             currentSpeeds.SetCp(curCP, speed);
+        }
+    }
+
+    void GetPbGhostId(){
+        auto pgScript = cast<CSmArenaRulesMode@>(app.PlaygroundScript);
+        if(pgScript !is null && pgScript.DataFileMgr !is null){
+            if(!tempStop){
+                auto ghosts = pgScript.DataFileMgr.Ghosts;
+                CGameGhostScript@ pbGhost = null;
+                for(uint i = 0; i < ghosts.Length; i++){
+                    if(ghosts[i].Nickname.EndsWith("Personal best")){
+                        @pbGhost = ghosts[i];
+                    }
+                }
+                if(pbGhost is null){
+                    print("pb ghost = null");
+                } else {
+                    print("pb ghost = " + pbGhost.Nickname + " time = " + pbGhost.Result.Time);
+                }
+            }
+            tempStop = true;
+        } else {
+            if(!tempStop)
+                print("It's null!");
         }
     }
 
