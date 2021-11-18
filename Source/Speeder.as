@@ -1,7 +1,7 @@
 // Checkpoint counting logic by Phlarx:
 // https://github.com/Phlarx/tm-checkpoint-counter
 
-[Setting name="Sync with pb ghost" category="General"]
+[Setting name="Keep synced with pb ghost" category="General"]
 bool keepSync = true;
 
 class Speeder{
