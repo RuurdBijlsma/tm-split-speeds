@@ -1,7 +1,6 @@
 Speeder speeder;
 
 // todo:
-// setting to only show splits when synced to ghost
 // save splits also when retiring and there's no pb yet!
 // stop shwoing splits when escape is presseed
 

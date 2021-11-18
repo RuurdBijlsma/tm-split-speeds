@@ -1,6 +1,9 @@
 // Checkpoint counting logic by Phlarx:
 // https://github.com/Phlarx/tm-checkpoint-counter
 
+[Setting name="Sync with pb ghost" category="General"]
+bool keepSync = true;
+
 class Speeder{
     bool inGame = false;
     bool strictMode = false;
@@ -14,9 +17,14 @@ class Speeder{
     MapSpeeds currentSpeeds = MapSpeeds();
     MapSpeeds bestSpeeds = MapSpeeds();
     GUI gui = GUI();
-    uint lastRaceTime = 0;
+    uint checkForNewPb = 0;
     uint64 showStartTime = 0;
     CGameCtnApp@ app = GetApp();
+    uint pbTime = 0;
+    bool isOnline = false;
+    bool isEditor = false;
+    uint lastRaceTime = 0;
+    string playerName = '';
 
     void Tick(){
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
@@ -31,6 +39,7 @@ class Speeder{
             || playground.Arena is null
             || playground.Map is null
             || playground.GameTerminals.Length <= 0){
+                checkForNewPb = 0;
                 inGame = false;
                 return;
             }
@@ -39,16 +48,35 @@ class Speeder{
         auto player = cast<CSmPlayer>(terminal.GUIPlayer);
         auto uiSequence = terminal.UISequence_Current;
 
+        // Player finishes map
         if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !handledFinish && player !is null){
+            handledFinish = true;
             // Show ui for 1s after finishing
             showStartTime = Time::get_Now() - 2000;
-            auto pb = bestSpeeds.getPb();
-            handledFinish = true;
-            if(lastRaceTime < pb || pb == 0){
-                currentSpeeds.ToFile(lastRaceTime);
-                bestSpeeds = currentSpeeds;
-                currentSpeeds = MapSpeeds(curMap, false);
-                // print('New PB! time = ' + lastRaceTime);
+            // check the next 1500 ticks every 10th tick if new pb gets registered
+            checkForNewPb = 150;
+        }
+
+        if(checkForNewPb > 0){
+            checkForNewPb--;
+            if(isOnline || isEditor){
+                uint filePb = bestSpeeds.GetPb();
+                if(lastRaceTime < filePb || filePb == 0){
+                    currentSpeeds.ToFile(lastRaceTime);
+                    bestSpeeds = currentSpeeds;
+                    currentSpeeds = MapSpeeds(curMap, false);
+                    checkForNewPb = 0;
+                }
+            }else{
+                auto lastGhost = GetPbGhost();
+                auto actualPbTime = keepSync ? pbTime : bestSpeeds.GetPb();
+                if(lastGhost !is null && (lastGhost.Result.Time < actualPbTime || actualPbTime == 0)){
+                    pbTime = lastGhost.Result.Time;
+                    currentSpeeds.ToFile(lastGhost.Result.Time);
+                    bestSpeeds = currentSpeeds;
+                    currentSpeeds = MapSpeeds(curMap, false);
+                    checkForNewPb = 0;
+                }
             }
         }
 
@@ -76,12 +104,32 @@ class Speeder{
 
         MwFastBuffer<CGameScriptMapLandmark@> landmarks = playground.Arena.MapLandmarks;
 
-        if(!inGame && (curMap != playground.Map.IdName || GetApp().Editor !is null)) {
+        isEditor = app.Editor !is null;
+        if(!inGame && (curMap != playground.Map.IdName || isEditor)) {
             // keep the previously-determined CP data, unless in the map editor
             curMap = playground.Map.IdName;
             bestSpeeds = MapSpeeds(curMap);
             currentSpeeds = MapSpeeds(curMap, false);
-            print("[SplitSpeeds] Map change! Current PB = " + bestSpeeds.getPb());
+            isOnline = app.PlaygroundScript is null;
+            playerName = player.User.Name;
+            if(isOnline || isEditor){
+                auto pb = bestSpeeds.GetPb();
+                if(pb == 0)
+                    print("[SplitSpeeds] Map change! No PB yet!");
+                else
+                    print("[SplitSpeeds] Map change! PB = " + pb);
+            }else{
+                auto pbGhost = GetPbGhost();
+                pbTime = pbGhost is null || pbGhost.Result is null ? 0 : pbGhost.Result.Time;
+                if(pbGhost is null)
+                    print("[SplitSpeeds] Map change! No PB yet!");
+                else
+                    print("[SplitSpeeds] Map change! Current PB = " + pbTime);
+                if(pbTime != bestSpeeds.GetPb() && keepSync){
+                    print("[SplitSpeeds] Stored speeds out of sync with personal best ghost, removing stored speeds");
+                    bestSpeeds.Clear();
+                }
+            }
 
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
             curCP = 0;
@@ -148,28 +196,28 @@ class Speeder{
         }
     }
 
-    void GetPbGhostId(){
+    CGameGhostScript@ GetPbGhost(){
         auto pgScript = cast<CSmArenaRulesMode@>(app.PlaygroundScript);
+        uint bestTime = 4000000000;
         if(pgScript !is null && pgScript.DataFileMgr !is null){
-            if(!tempStop){
-                auto ghosts = pgScript.DataFileMgr.Ghosts;
-                CGameGhostScript@ pbGhost = null;
-                for(uint i = 0; i < ghosts.Length; i++){
-                    if(ghosts[i].Nickname.EndsWith("Personal best")){
-                        @pbGhost = ghosts[i];
-                    }
-                }
-                if(pbGhost is null){
-                    print("pb ghost = null");
-                } else {
-                    print("pb ghost = " + pbGhost.Nickname + " time = " + pbGhost.Result.Time);
+            auto ghosts = pgScript.DataFileMgr.Ghosts;
+            CGameGhostScript@ bestGhost = null;
+            for(uint i = 0; i < ghosts.Length; i++){
+                auto ghostTime = ghosts[i].Result.Time;
+                auto name = ghosts[i].Nickname;
+                if(name.EndsWith("Personal best") && ghostTime < bestTime){
+                    bestTime = ghostTime;
+                    @bestGhost = ghosts[i];
                 }
             }
-            tempStop = true;
-        } else {
-            if(!tempStop)
-                print("It's null!");
+            if(bestGhost is null){
+                // print("pb ghost = null");
+                return null;
+            }
+            // print("pb (" + bestGhost.Id.Value + ") = " + bestGhost.Nickname + " t = " + bestGhost.Result.Time + " rslt id = " + bestGhost.Result.Id.Value + " spwn landmark id = " + bestGhost.Result.SpawnLandmarkId.Value);
+            return bestGhost;
         }
+        return null;
     }
 
 #if TMNEXT

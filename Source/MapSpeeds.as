@@ -30,7 +30,7 @@ class MapSpeeds{
 
     void Clear(){
         speeds = Json::Object();
-        ToFile(0);
+        Json::ToFile(jsonFile, speeds);
     }
 
     float GetCp(uint cpId){
@@ -61,7 +61,7 @@ class MapSpeeds{
         }
     }
 
-    uint getPb(){
+    uint GetPb(){
         if(!speeds.HasKey(pbKey))
             return 0;
         return speeds[pbKey];
