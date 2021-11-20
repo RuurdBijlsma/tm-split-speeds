@@ -94,7 +94,7 @@ class Speeder{
                     print("[SplitSpeeds] Map change! No PB yet!");
                 else
                     print("[SplitSpeeds] Map change! PB = " + pb);
-            }else{
+            } else {
                 auto pbGhost = GetPbGhost();
                 pbTime = pbGhost is null || pbGhost.Result is null ? 0 : pbGhost.Result.Time;
                 if(pbGhost is null)
@@ -177,24 +177,25 @@ class Speeder{
     }
 
     void CheckForPb(){
+        auto compareCps = !bestSpeeds.GetFinished() || !currentSpeeds.GetFinished();
         if(isOnline || isEditor){
             uint filePb = bestSpeeds.GetPb();
             // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
-            if(currentSpeeds.GetFinished() && (lastRaceTime < filePb || filePb == 0) || 
-             (!currentSpeeds.GetFinished() && curCP >= bestSpeeds.CpCount())){
+            if(!compareCps && (lastRaceTime < filePb || filePb == 0) || 
+             (compareCps && curCP >= bestSpeeds.CpCount())){
                 currentSpeeds.ToFile(lastRaceTime, curCP);
                 bestSpeeds = currentSpeeds;
                 currentSpeeds = MapSpeeds(curMap, false);
             }
-        }else{
+        } else {
             auto lastGhost = GetPbGhost();
             auto actualPbTime = keepSync ? pbTime : bestSpeeds.GetPb();
             // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
             if(lastGhost !is null && 
-                 (currentSpeeds.GetFinished() && (lastGhost.Result.Time < actualPbTime || actualPbTime == 0) || 
-                (!currentSpeeds.GetFinished() && curCP >= bestSpeeds.CpCount()))){
+                 (!compareCps && (lastGhost.Result.Time < actualPbTime || actualPbTime == 0) || 
+                (compareCps && curCP >= bestSpeeds.CpCount()))){
                 pbTime = lastGhost.Result.Time;
                 currentSpeeds.ToFile(lastGhost.Result.Time, curCP);
                 bestSpeeds = currentSpeeds;
