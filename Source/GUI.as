@@ -43,7 +43,7 @@ Resources::Font@ font;
 
 int shadowX = 1;
 int shadowY = 1;
-int fontSize = 39;
+int fontSize = 34;
 
 class GUI{
     float currentSpeed = 0;
@@ -54,7 +54,7 @@ class GUI{
     bool visible = true;
 
     GUI(){
-	    @font = Resources::GetFont("sugo-pro.ttf");
+	    @font = Resources::GetFont("Oswald-Regular.ttf");
     }
 
     void Render(){
@@ -88,10 +88,11 @@ class GUI{
         if(denseUI){
             boxHeight = uint(scale * 40);
             nvg::FontSize(scale * fontSize - 5);
-            textOffsetY = 2;
+            textOffsetY = 3;
             y += 17;
         } else {
             nvg::FontSize(scale * fontSize);
+            textOffsetY = 3;
         }
 
         // Draw current speed
@@ -107,10 +108,10 @@ class GUI{
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             if(textShadow){
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(x - box1Width + shadowX, y + boxHeight / 2 + shadowY + textOffsetY, box1Width - padding, text);
+                nvg::TextBox(x - box1Width + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box1Width, text);
             }
             nvg::FillColor(textColour);
-            nvg::TextBox(x - box1Width, y + boxHeight / 2 + textOffsetY, box1Width - padding, text);
+            nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, text);
         }
         // Draw difference
         if(showSpeedDiff && hasDiff){
@@ -132,10 +133,10 @@ class GUI{
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             if(textShadow){
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(x + shadowX, y + boxHeight / 2 + shadowY + textOffsetY, box2Width - padding, text);
+                nvg::TextBox(x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, text);
             }
             nvg::FillColor(textColour);
-            nvg::TextBox(x, y + boxHeight / 2 + textOffsetY, box2Width - padding, text);
+            nvg::TextBox(x - padding, y + boxHeight / 2 + textOffsetY, box2Width, text);
         }
     }
 }

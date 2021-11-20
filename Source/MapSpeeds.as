@@ -2,6 +2,8 @@ class MapSpeeds{
     string mapId = '';
     string jsonFile = '';
     string pbKey = 'pb';
+    string finishedKey = 'finished';
+    string cpCountKey = 'cps';
     Json::Value speeds = Json::Object();
 
     string folder = '';
@@ -28,9 +30,26 @@ class MapSpeeds{
         }
     }
 
+    bool GetFinished(){
+        if(!speeds.HasKey(finishedKey))
+            return false;
+        bool finished = speeds[finishedKey];
+        return finished;
+    }
+
+    void SetFinished(bool value){
+        speeds[finishedKey] = value;
+    }
+
     void Clear(){
         speeds = Json::Object();
         Json::ToFile(jsonFile, speeds);
+    }
+
+    uint CpCount(){
+        if(!speeds.HasKey(cpCountKey))
+            return 0;
+        return speeds[cpCountKey];
     }
 
     float GetCp(uint cpId){
@@ -67,9 +86,10 @@ class MapSpeeds{
         return speeds[pbKey];
     }
 
-    void ToFile(uint pbTime){
+    void ToFile(uint pbTime, uint cpCount){
         speeds[pbKey] = pbTime;
-        print("[SplitSpeeds] Saving new pb (" + pbTime + ") to file: " + jsonFile);
+        speeds[cpCountKey] = cpCount;
+        print("[SplitSpeeds] Saving new pb (" + pbTime + ") cp (" + cpCount + ") to file: " + jsonFile);
         Json::ToFile(jsonFile, speeds);
     }
 }
