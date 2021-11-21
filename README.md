@@ -8,6 +8,9 @@ This plugin has a few tweakable settings:
 * Toggle to show anyways when GUI is hidden.
 
 ## Changelog
+### 0.2.8
+* Bug fixes
+
 ### 0.2.7
 * Store pb speeds when retiring on a map with no pb yet, similar to time splits
 * Use the font the game uses (Oswald Regular)

@@ -22,8 +22,10 @@ class Speeder{
     uint pbTime = 0;
     bool isOnline = false;
     bool isEditor = false;
-    uint lastRaceTime = 0;
     string playerName = '';
+    uint checkingForPb = 0;
+    bool retireHandled = false;
+    uint raceStartTime = 0;
 
     void Tick(){
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
@@ -53,7 +55,15 @@ class Speeder{
             showStartTime = Time::get_Now() - 2000;
             // check the next 1500 ticks every 10th tick if new pb gets registered
             currentSpeeds.SetFinished(true);
-            CheckForPb();
+            checkingForPb = 10;
+        }
+
+        if(checkingForPb > 0){
+            // print("Checking for pb after finish!");
+            checkingForPb--;
+            // print("Player should not be null? " + (player is null));
+            if(player !is null)
+                CheckForPb(player, true);
         }
 
         if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
@@ -70,8 +80,6 @@ class Speeder{
             return;
         }
 
-        lastRaceTime = player.ScriptAPI.CurrentRaceTime;
-
         if(player.CurrentLaunchedRespawnLandmarkIndex == uint(-1)) {
             // sadly, can't see CPs of spectated players any more
             inGame = false;
@@ -85,7 +93,7 @@ class Speeder{
             // keep the previously-determined CP data, unless in the map editor
             curMap = playground.Map.IdName;
             bestSpeeds = MapSpeeds(curMap);
-            currentSpeeds = MapSpeeds(curMap, false);
+            TriggerRestart(player);
             isOnline = app.PlaygroundScript is null;
             playerName = player.User.Name;
             if(isOnline || isEditor){
@@ -137,19 +145,20 @@ class Speeder{
             }
         }
 
+        auto post = player.ScriptAPI.Post;
+        if(!retireHandled && post == CSmScriptPlayer::EPost::Char){
+            retireHandled = true;
+            TriggerRestart(player);
+        }else if(retireHandled && post == CSmScriptPlayer::EPost::CarDriver){
+            // Driving
+            retireHandled = false;
+        }
+
         inGame = true;
         if(preCPIdx != player.CurrentLaunchedRespawnLandmarkIndex && 
             landmarks.Length > player.CurrentLaunchedRespawnLandmarkIndex) {
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
-            if(landmarks[preCPIdx].Waypoint is null) {
-                // print("RETIRED, curCP = " + curCP + " maxCP = " + maxCP);
-                if(curCP <= maxCP){
-                    currentSpeeds.SetFinished(false);
-                    CheckForPb();
-                    currentSpeeds = MapSpeeds(curMap, false);
-                }
-                curCP = 0;
-            } else {
+            if(landmarks[preCPIdx].Waypoint !is null) {
                 curCP++;
             }
 
@@ -176,10 +185,37 @@ class Speeder{
         }
     }
 
-    void CheckForPb(){
+    uint GetRaceTime(CSmPlayer@ player){
+        if(player !is null){
+            // auto now = isOnline ? app.Network.PlaygroundClientScriptAPI.GameTime : app.PlaygroundScript.Now;
+            auto now = app.Network.PlaygroundClientScriptAPI.GameTime;
+            return now - raceStartTime;
+            // print("Race time custom = " + crt + " Race time default = " + drt + " equal?=" + (drt==crt));
+        }
+        return 0;
+    }
+
+    void TriggerRestart(CSmPlayer@ player){
+        // Waiting at start
+        // print("RETIRED, curCP = " + curCP + " maxCP = " + maxCP);
+        if(curCP <= maxCP){
+            currentSpeeds.SetFinished(false);
+            CheckForPb(player);
+            currentSpeeds = MapSpeeds(curMap, false);
+        }
+        raceStartTime = player.ScriptAPI.StartTime;
+        curCP = 0;
+    }
+
+    void CheckForPb(CSmPlayer@ player, bool onlyFinishedGhosts = false){
+        if(curCP == 0){
+            return;
+        }
+
         auto compareCps = !bestSpeeds.GetFinished() || !currentSpeeds.GetFinished();
         if(isOnline || isEditor){
             uint filePb = bestSpeeds.GetPb();
+            uint lastRaceTime = GetRaceTime(player);
             // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
             if(!compareCps && (lastRaceTime < filePb || filePb == 0) || 
@@ -187,10 +223,12 @@ class Speeder{
                 currentSpeeds.ToFile(lastRaceTime, curCP);
                 bestSpeeds = currentSpeeds;
                 currentSpeeds = MapSpeeds(curMap, false);
+                checkingForPb = 0;
             }
         } else {
-            auto lastGhost = GetPbGhost();
+            auto lastGhost = GetPbGhost(onlyFinishedGhosts);
             auto actualPbTime = keepSync ? pbTime : bestSpeeds.GetPb();
+            // print("last ghost is null? " + (lastGhost is null));
             // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
             if(lastGhost !is null && 
@@ -200,13 +238,16 @@ class Speeder{
                 currentSpeeds.ToFile(lastGhost.Result.Time, curCP);
                 bestSpeeds = currentSpeeds;
                 currentSpeeds = MapSpeeds(curMap, false);
+                checkingForPb = 0;
             }
         }
     }
 
-    CGameGhostScript@ GetPbGhost(){
+    CGameGhostScript@ GetPbGhost(bool onlyFinishedGhosts = false){
         auto pgScript = cast<CSmArenaRulesMode@>(app.PlaygroundScript);
-        uint bestTime = 0;
+        // Unfinished ghosts have a time of uint(-1), so they won't be picked if the bestTime is
+        // initialized to uint(-1)
+        uint bestTime = onlyFinishedGhosts ? uint(-1) : 0;
         if(pgScript !is null && pgScript.DataFileMgr !is null){
             auto ghosts = pgScript.DataFileMgr.Ghosts;
             CGameGhostScript@ bestGhost = null;
