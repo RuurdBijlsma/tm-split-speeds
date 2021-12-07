@@ -8,7 +8,7 @@ This plugin has a few tweakable settings:
 * Toggle to show anyways when GUI is hidden.
 
 ## Changelog
-### 0.2.8
+### 0.2.8 & 0.2.9
 * Bug fixes
 
 ### 0.2.7

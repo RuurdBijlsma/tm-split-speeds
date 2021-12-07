@@ -158,14 +158,18 @@ class Speeder{
         if(preCPIdx != player.CurrentLaunchedRespawnLandmarkIndex && 
             landmarks.Length > player.CurrentLaunchedRespawnLandmarkIndex) {
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
-            if(landmarks[preCPIdx].Waypoint !is null) {
-                curCP++;
-            }
-
-            auto vis = GetVehicleVis(app);
-            if(vis is null){
+            auto isStart = landmarks[preCPIdx].Waypoint is null;
+            if(isStart){
+                // print("CP IS START, NOT REGISTERING SPEEDS");
                 return;
             }
+            if(landmarks[preCPIdx].Waypoint !is null) 
+                curCP++;
+
+            auto vis = GetVehicleVis(app);
+            if(vis is null)
+                return;
+
             float speed = vis.AsyncState.WorldVel.Length() * 3.6f;
             gui.currentSpeed = speed;
             if(bestSpeeds.HasCp(curCP)){
@@ -203,6 +207,7 @@ class Speeder{
             CheckForPb(player);
             currentSpeeds = MapSpeeds(curMap, false);
         }
+        
         raceStartTime = player.ScriptAPI.StartTime;
         curCP = 0;
     }
