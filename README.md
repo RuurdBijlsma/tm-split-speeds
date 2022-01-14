@@ -8,6 +8,13 @@ This plugin has a few tweakable settings:
 * Toggle to show anyways when GUI is hidden.
 
 ## Changelog
+### 0.3.0
+* When sync is turned on (default) speed splits now only get saved and shown when a PB is driven while using the plugin.
+* Fix getting personal best ghost in other languages
+* Fix "clear current map pb's" button not working
+* Fix pb getting overwritten sometimes by unfinished run
+* Maybe fix bug on map review server where speed splits are shown for previous map when previous map wasn't finished yet when the timer ran out.
+
 ### 0.2.8 & 0.2.9
 * Bug fixes
 

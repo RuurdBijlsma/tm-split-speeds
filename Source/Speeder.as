@@ -1,7 +1,7 @@
 // Checkpoint counting logic by Phlarx:
 // https://github.com/Phlarx/tm-checkpoint-counter
 
-[Setting name="Keep synced with pb ghost" category="General"]
+[Setting name="Delete speeds when out of sync with PB ghost" category="General"]
 bool keepSync = true;
 
 class Speeder{
@@ -14,8 +14,8 @@ class Speeder{
     uint maxCP = 0;
     bool handledFinish = false;
     
-    MapSpeeds currentSpeeds = MapSpeeds();
-    MapSpeeds bestSpeeds = MapSpeeds();
+    MapSpeeds@ currentSpeeds = MapSpeeds();
+    MapSpeeds@ bestSpeeds = MapSpeeds();
     GUI gui = GUI();
     uint64 showStartTime = 0;
     CGameCtnApp@ app = GetApp();
@@ -27,7 +27,12 @@ class Speeder{
     bool retireHandled = false;
     uint raceStartTime = 0;
 
-    void Tick(){
+    void ClearPB(){
+        bestSpeeds.Clear();
+        @bestSpeeds = MapSpeeds(curMap);
+    }
+
+    void Tick() {
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
 
         uint64 nowTime = Time::get_Now();
@@ -50,6 +55,7 @@ class Speeder{
 
         // Player finishes map
         if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !handledFinish && player !is null){
+            print("UI SEQUENCE FINISH");
             handledFinish = true;
             // Show ui for 1s after finishing
             showStartTime = Time::get_Now() - 2000;
@@ -62,8 +68,11 @@ class Speeder{
             // print("Checking for pb after finish!");
             checkingForPb--;
             // print("Player should not be null? " + (player is null));
-            if(player !is null)
+            if(player !is null){
                 CheckForPb(player, true);
+            }else{
+                print("Player is null while checking for pb!");
+            }
         }
 
         if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
@@ -92,26 +101,30 @@ class Speeder{
         if(!inGame && (curMap != playground.Map.IdName || isEditor)) {
             // keep the previously-determined CP data, unless in the map editor
             curMap = playground.Map.IdName;
-            bestSpeeds = MapSpeeds(curMap);
+            @bestSpeeds = MapSpeeds(curMap);
+
             TriggerRestart(player);
             isOnline = app.PlaygroundScript is null;
             playerName = player.User.Name;
             if(isOnline || isEditor){
                 auto pb = bestSpeeds.GetPb();
                 if(pb == 0)
-                    print("[SplitSpeeds] Map change! No PB yet!");
+                    print("Map change ("+curMap+")! No PB yet!");
                 else
-                    print("[SplitSpeeds] Map change! PB = " + pb);
+                    print("Map change ("+curMap+")! PB = " + pb);
             } else {
                 auto pbGhost = GetPbGhost();
                 pbTime = pbGhost is null || pbGhost.Result is null ? 0 : pbGhost.Result.Time;
                 if(pbGhost is null)
-                    print("[SplitSpeeds] Map change! No PB yet!");
+                    print("Map change ("+curMap+")! No PB yet!");
                 else
-                    print("[SplitSpeeds] Map change! Current PB = " + pbTime);
-                if(pbTime != bestSpeeds.GetPb() && keepSync){
-                    print("[SplitSpeeds] Stored speeds out of sync with personal best ghost, removing stored speeds");
-                    bestSpeeds.Clear();
+                    print("Map change ("+curMap+")! Current PB = " + pbTime);
+                if(pbTime != bestSpeeds.GetPb()){
+                    print("Stored speeds ("+bestSpeeds.GetPb()+") out of sync with personal best ghost ("+pbTime+")");
+                    if(keepSync){
+                        print("Removing stored speeds to keep speed splits in sync with PB");
+                        ClearPB();
+                    }
                 }
             }
 
@@ -176,10 +189,10 @@ class Speeder{
                 auto pbSpeed = bestSpeeds.GetCp(curCP);
                 gui.hasDiff = true;
                 gui.difference = speed - pbSpeed;
-                // print("cp = " + curCP + ", curspeed = " + speed + ", pb speed = " + pbSpeed);
+                print("cp = " + curCP + ", curspeed = " + speed + ", pb speed = " + pbSpeed);
             } else {
                 gui.hasDiff = false;
-                // print("cp = " + curCP + ", curspeed = " + speed + ", NO PB FOUND");
+                print("cp = " + curCP + ", curspeed = " + speed + ", NO PB FOUND");
             }
             if(curCP != 0)
                 showStartTime = nowTime;
@@ -203,9 +216,10 @@ class Speeder{
         // Waiting at start
         // print("RETIRED, curCP = " + curCP + " maxCP = " + maxCP);
         if(curCP <= maxCP){
+            print("Retired!");
             currentSpeeds.SetFinished(false);
             CheckForPb(player);
-            currentSpeeds = MapSpeeds(curMap, false);
+            @currentSpeeds = MapSpeeds(curMap, false);
         }
         
         raceStartTime = player.ScriptAPI.StartTime;
@@ -214,23 +228,35 @@ class Speeder{
 
     void CheckForPb(CSmPlayer@ player, bool onlyFinishedGhosts = false){
         if(curCP == 0){
+            print("Not checking for pb, because cur cp = 0");
             return;
         }
 
         auto compareCps = !bestSpeeds.GetFinished() || !currentSpeeds.GetFinished();
+        auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
+        auto isRightMap = playground !is null && playground.Map !is null && currentSpeeds.mapId == playground.Map.IdName;
         if(isOnline || isEditor){
             uint filePb = bestSpeeds.GetPb();
             uint lastRaceTime = GetRaceTime(player);
             // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
-            if(!compareCps && (lastRaceTime < filePb || filePb == 0) || 
-             (compareCps && curCP >= bestSpeeds.CpCount())){
+            if(!compareCps && (lastRaceTime < filePb || filePb == 0)
+             || (compareCps && curCP >= bestSpeeds.CpCount())
+             ){
                 currentSpeeds.ToFile(lastRaceTime, curCP);
-                bestSpeeds = currentSpeeds;
-                currentSpeeds = MapSpeeds(curMap, false);
+                if(isRightMap)
+                    @bestSpeeds = currentSpeeds;
+                @currentSpeeds = MapSpeeds(curMap, false);
                 checkingForPb = 0;
             }
         } else {
+            bool pbIsSyncedWithPlugin = pbTime == bestSpeeds.GetPb();
+            print("pbIsSyncedWithPlugin: " + pbIsSyncedWithPlugin + " pbTime: " + pbTime + "bestSpeeds.GetPB(): " + bestSpeeds.GetPb());
+            if(keepSync && !pbIsSyncedWithPlugin){
+                // dont use cps for pb check if pb was driven without plugin
+                compareCps = false;
+            }
+            print("pb time check: " + pbTime);
             auto lastGhost = GetPbGhost(onlyFinishedGhosts);
             auto actualPbTime = keepSync ? pbTime : bestSpeeds.GetPb();
             // print("last ghost is null? " + (lastGhost is null));
@@ -241,8 +267,9 @@ class Speeder{
                 (compareCps && curCP >= bestSpeeds.CpCount()))){
                 pbTime = lastGhost.Result.Time;
                 currentSpeeds.ToFile(lastGhost.Result.Time, curCP);
-                bestSpeeds = currentSpeeds;
-                currentSpeeds = MapSpeeds(curMap, false);
+                if(isRightMap)
+                    @bestSpeeds = currentSpeeds;
+                @currentSpeeds = MapSpeeds(curMap, false);
                 checkingForPb = 0;
             }
         }
@@ -258,8 +285,8 @@ class Speeder{
             CGameGhostScript@ bestGhost = null;
             for(uint i = 0; i < ghosts.Length; i++){
                 auto ghostTime = ghosts[i].Result.Time;
-                auto name = ghosts[i].Nickname;
-                if(name.EndsWith("Personal best") && (ghostTime < bestTime || bestTime == 0)){
+                auto trigram = ghosts[i].Trigram;
+                if(trigram == '|' && (ghostTime < bestTime || bestTime == 0)){
                     bestTime = ghostTime;
                     @bestGhost = ghosts[i];
                 }

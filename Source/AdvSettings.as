@@ -1,7 +1,7 @@
 namespace AdvSettings{
     void Render(Speeder speeder){
         if (UI::Button("Clear current map pb speeds")){
-            speeder.bestSpeeds.Clear();
+            speeder.ClearPB();  
             UI::ShowNotification("Cleared pb speeds for current map", 5000);
         }
         if (UI::Button("Clear all stored pb speeds")){
@@ -9,7 +9,7 @@ namespace AdvSettings{
             string folder = baseFolder + 'splitspeeds';
             if(IO::FolderExists(folder))
                 DeleteFiles();
-            speeder.bestSpeeds.Clear();            
+            speeder.ClearPB();   
             UI::ShowNotification("Cleared pb speeds for all maps", 5000);
         }
     }

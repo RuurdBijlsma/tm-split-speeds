@@ -19,7 +19,7 @@ class MapSpeeds{
         folder = baseFolder + 'splitspeeds';
         if(!IO::FolderExists(folder)){
             IO::CreateFolder(folder);
-            print("[SplitSpeeds] Created folder: " + folder);
+            print("Created folder: " + folder);
         }
 
         mapId = mapIdentifier;
@@ -43,6 +43,7 @@ class MapSpeeds{
 
     void Clear(){
         speeds = Json::Object();
+        print("Clearing pb speeds! new speeds: " + Json::Write(speeds));
         Json::ToFile(jsonFile, speeds);
     }
 
@@ -72,7 +73,7 @@ class MapSpeeds{
             auto content = f.ReadToEnd();
             f.Close();
             if(content == "" || content == "null"){
-                warn("[SplitSpeeds] Invalid SplitSpeeds file detected");
+                warn("Invalid SplitSpeeds file detected");
                 speeds = Json::Object();
             } else {
                 speeds = Json::FromFile(jsonFile);
@@ -87,9 +88,21 @@ class MapSpeeds{
     }
 
     void ToFile(uint pbTime, uint cpCount){
+        if(!IsValid()){
+            warn("Trying to export invalid map speeds to file! aborting ToFile()");
+            return;
+        }
         speeds[pbKey] = pbTime;
         speeds[cpCountKey] = cpCount;
-        print("[SplitSpeeds] Saving new pb (" + pbTime + ") cp (" + cpCount + ") to file: " + jsonFile);
+        print("Saving new pb (" + pbTime + ") cp (" + cpCount + ") finished (" + GetFinished() + ") to file: " + jsonFile);
         Json::ToFile(jsonFile, speeds);
     }
-}
+
+    bool IsValid(){
+        for(uint i = 0; i < CpCount(); i++){
+            if(!HasCp(i + 1))
+                return false;
+        }
+        return true;
+    }
+};

@@ -1,8 +1,8 @@
 Speeder speeder;
 
 // todo:
-// save splits also when retiring and there's no pb yet!
 // stop shwoing splits when escape is presseed
+// test pls
 
 void Main(){
     speeder = Speeder();
