@@ -5,7 +5,8 @@ This plugin has a few tweakable settings:
 * Colour shown when ahead of pb speed (default is green).
 * Colour shown when behind pb speed (default is orange).
 * Whether to show only the difference in speed, the current speed, or both.
-* Toggle to show anyways when GUI is hidden.
+* Toggle to show when in game GUI is hidden or not.
+* Change size or position using settings.
 
 ## Changelog
 ### 0.3.0
