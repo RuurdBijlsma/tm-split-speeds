@@ -14,7 +14,7 @@ This plugin has a few tweakable settings:
 * Fix getting personal best ghost in other languages
 * Fix "clear current map pb's" button not working
 * Fix pb getting overwritten sometimes by unfinished run
-* Maybe fix bug on map review server where speed splits are shown for previous map when previous map wasn't finished yet when the timer ran out.
+* Fix bug on map review server where speed splits are shown for previous map when previous map wasn't finished yet when the timer ran out.
 
 ### 0.2.8 & 0.2.9
 * Bug fixes
