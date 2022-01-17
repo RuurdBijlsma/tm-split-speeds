@@ -1,5 +1,5 @@
 $compress = @{
-    Path = "./Oswald-Regular.ttf", "./info.toml", "./Source"
+    Path = "./Oswald-Regular.ttf", "./info.toml", "./src"
     CompressionLevel = "Fastest"
     DestinationPath = "../SplitSpeeds.zip"
 }
