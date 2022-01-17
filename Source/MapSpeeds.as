@@ -25,7 +25,6 @@ class MapSpeeds{
         mapId = mapIdentifier;
         jsonFile = folder + '/' + mapId + ".json";
         if(loadFromFile){
-            // print("Reading map speeds from file: " + jsonFile);
             FromFile();
         }
     }

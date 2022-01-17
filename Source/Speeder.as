@@ -54,8 +54,7 @@ class Speeder{
         auto uiSequence = terminal.UISequence_Current;
 
         // Player finishes map
-        if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !handledFinish && player !is null){
-            print("UI SEQUENCE FINISH");
+        if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !handledFinish && player !is null) {
             handledFinish = true;
             // Show ui for 1s after finishing
             showStartTime = Time::get_Now() - 2000;
@@ -64,18 +63,16 @@ class Speeder{
             checkingForPb = 10;
         }
 
-        if(checkingForPb > 0){
-            // print("Checking for pb after finish!");
+        if(checkingForPb > 0) {
             checkingForPb--;
-            // print("Player should not be null? " + (player is null));
-            if(player !is null){
+            if(player !is null) {
                 CheckForPb(player, true);
-            }else{
+            } else {
                 print("Player is null while checking for pb!");
             }
         }
 
-        if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish){
+        if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish) {
             handledFinish = false;
         }
 
@@ -149,8 +146,7 @@ class Speeder{
                 } else {
                     // this waypoint looks like a CP, acts like a CP, but is not called a CP.
                     if(strictMode) {
-                        warn("The current map, " + string(playground.Map.MapName) + " (" + playground.Map.IdName + "), is not compliant with checkpoint naming rules."
-                        + " If the CP count for this map is inaccurate, please report this map to Phlarx#1765 on Discord.");
+                        warn("The current map, " + string(playground.Map.MapName) + " (" + playground.Map.IdName + "), is not compliant with checkpoint naming rules.");
                     }
                     maxCP++;
                     strictMode = false;
@@ -173,7 +169,6 @@ class Speeder{
             preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
             auto isStart = landmarks[preCPIdx].Waypoint is null;
             if(isStart){
-                // print("CP IS START, NOT REGISTERING SPEEDS");
                 return;
             }
             if(landmarks[preCPIdx].Waypoint !is null) 
@@ -189,10 +184,8 @@ class Speeder{
                 auto pbSpeed = bestSpeeds.GetCp(curCP);
                 gui.hasDiff = true;
                 gui.difference = speed - pbSpeed;
-                print("cp = " + curCP + ", curspeed = " + speed + ", pb speed = " + pbSpeed);
             } else {
                 gui.hasDiff = false;
-                print("cp = " + curCP + ", curspeed = " + speed + ", NO PB FOUND");
             }
             if(curCP != 0)
                 showStartTime = nowTime;
@@ -204,19 +197,15 @@ class Speeder{
 
     uint GetRaceTime(CSmPlayer@ player){
         if(player !is null){
-            // auto now = isOnline ? app.Network.PlaygroundClientScriptAPI.GameTime : app.PlaygroundScript.Now;
             auto now = app.Network.PlaygroundClientScriptAPI.GameTime;
             return now - raceStartTime;
-            // print("Race time custom = " + crt + " Race time default = " + drt + " equal?=" + (drt==crt));
         }
         return 0;
     }
 
     void TriggerRestart(CSmPlayer@ player){
         // Waiting at start
-        // print("RETIRED, curCP = " + curCP + " maxCP = " + maxCP);
-        if(curCP <= maxCP){
-            print("Retired!");
+        if(curCP <= maxCP) {
             currentSpeeds.SetFinished(false);
             CheckForPb(player);
             @currentSpeeds = MapSpeeds(curMap, false);
@@ -227,10 +216,8 @@ class Speeder{
     }
 
     void CheckForPb(CSmPlayer@ player, bool onlyFinishedGhosts = false){
-        if(curCP == 0){
-            print("Not checking for pb, because cur cp = 0");
+        if(curCP == 0) 
             return;
-        }
 
         auto compareCps = !bestSpeeds.GetFinished() || !currentSpeeds.GetFinished();
         auto playground = cast<CSmArenaClient>(app.CurrentPlayground);
@@ -238,7 +225,6 @@ class Speeder{
         if(isOnline || isEditor){
             uint filePb = bestSpeeds.GetPb();
             uint lastRaceTime = GetRaceTime(player);
-            // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
             if(!compareCps && (lastRaceTime < filePb || filePb == 0)
              || (compareCps && curCP >= bestSpeeds.CpCount())
@@ -251,16 +237,12 @@ class Speeder{
             }
         } else {
             bool pbIsSyncedWithPlugin = pbTime == bestSpeeds.GetPb();
-            print("pbIsSyncedWithPlugin: " + pbIsSyncedWithPlugin + " pbTime: " + pbTime + "bestSpeeds.GetPB(): " + bestSpeeds.GetPb());
             if(keepSync && !pbIsSyncedWithPlugin){
                 // dont use cps for pb check if pb was driven without plugin
                 compareCps = false;
             }
-            print("pb time check: " + pbTime);
             auto lastGhost = GetPbGhost(onlyFinishedGhosts);
             auto actualPbTime = keepSync ? pbTime : bestSpeeds.GetPb();
-            // print("last ghost is null? " + (lastGhost is null));
-            // print("Current cp count = " + curCP + " best cp count = " + bestSpeeds.CpCount());
             // If finished use pb time to check for pb, else use cp count to check for pb
             if(lastGhost !is null && 
                  (!compareCps && (lastGhost.Result.Time < actualPbTime || actualPbTime == 0) || 
@@ -292,10 +274,8 @@ class Speeder{
                 }
             }
             if(bestGhost is null){
-                // print("pb ghost = null");
                 return null;
             }
-            // print("pb (" + bestGhost.Id.Value + ") = " + bestGhost.Nickname + " t = " + bestGhost.Result.Time + " rslt id = " + bestGhost.Result.Id.Value + " spwn landmark id = " + bestGhost.Result.SpawnLandmarkId.Value);
             return bestGhost;
         }
         return null;

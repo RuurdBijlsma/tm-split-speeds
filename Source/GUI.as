@@ -45,7 +45,7 @@ int shadowX = 1;
 int shadowY = 1;
 int fontSize = 34;
 
-class GUI{
+class GUI {
     float currentSpeed = 0;
     float difference = 0;
     bool hasDiff = false;
@@ -53,11 +53,11 @@ class GUI{
     bool guiHidden = false;
     bool visible = true;
 
-    GUI(){
+    GUI() {
 	    @font = Resources::GetFont("Oswald-Regular.ttf");
     }
 
-    void Render(){
+    void Render() {
         if(nativeColours){
             fasterColour = vec4(0, .123, .822, .75);
             slowerColour = vec4(.869, 0.117, 0.117, .784);
@@ -75,7 +75,7 @@ class GUI{
         nvg::Restore();
     }
 
-    void RenderDefaultUI(){
+    void RenderDefaultUI() {
         uint box1Width = uint(scale * 67);
         uint box2Width = uint(scale * 78);
         uint boxHeight = uint(scale * 57);
@@ -85,7 +85,7 @@ class GUI{
         uint textOffsetY = 0;
         nvg::FontFace(font);
 
-        if(denseUI){
+        if(denseUI) {
             boxHeight = uint(scale * 40);
             nvg::FontSize(scale * fontSize - 5);
             textOffsetY = 3;
@@ -96,7 +96,7 @@ class GUI{
         }
 
         // Draw current speed
-        if(showCurrentSpeed){
+        if(showCurrentSpeed) {
             // Draw box
             nvg::BeginPath();
             nvg::Rect(x - box1Width, y, box1Width, boxHeight);
@@ -114,7 +114,7 @@ class GUI{
             nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, text);
         }
         // Draw difference
-        if(showSpeedDiff && hasDiff){
+        if(showSpeedDiff && hasDiff) {
             // Draw box
             nvg::BeginPath();
             nvg::Rect(x, y, box2Width, boxHeight);
@@ -131,7 +131,7 @@ class GUI{
             if(difference < 1 && difference > -1)
                 text = '0';
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
-            if(textShadow){
+            if(textShadow) {
                 nvg::FillColor(shadowColour);
                 nvg::TextBox(x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, text);
             }
