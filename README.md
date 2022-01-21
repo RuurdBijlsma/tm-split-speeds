@@ -11,6 +11,7 @@ This plugin has a few tweakable settings:
 ## Changelog
 ### 0.3.0
 * When sync is turned on (default) speed splits now only get saved and shown when a PB is driven while using the plugin.
+    * Turn this off by unticking "Delete speeds when out of sync with PB ghost" in settings
 * Fix getting personal best ghost in other languages
 * Fix "clear current map pb's" button not working
 * Fix pb getting overwritten sometimes by unfinished run
