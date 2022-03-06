@@ -1,59 +1,19 @@
-[Setting name="Show current speed at cp" category="General"]
-bool showCurrentSpeed = true;
+namespace GUI {
+    vec4 sameSpeedColour = vec4(.5, .5, .5, .75);
+    vec4 shadowColour = vec4(0, 0, 0, .6);
+    Resources::Font@ font;
 
-[Setting name="Show difference to pb speed at cp" category="General"]
-bool showSpeedDiff = true;
+    int shadowX = 1;
+    int shadowY = 1;
+    int fontSize = 34;
 
-[Setting name="Text shadow" category="General"]
-bool textShadow = false;
-
-[Setting name="Dense UI" category="General"]
-bool denseUI = false;
-
-[Setting name="UI Scale" min=0.1 max=2 category="General"]
-float scale = 1;
-
-[Setting name="Anchor X position" min=0 max=1 category="General"]
-float anchorX = .49458;
-
-[Setting name="Anchor Y position" min=0 max=1 category="General"]
-float anchorY = .249;
-
-[Setting name="Show when GUI is hidden" category="General"]
-bool showWhenGuiHidden = false;
-
-[Setting name="Use native TM colours (blue / red)" category="General"]
-bool nativeColours = false;
-
-[Setting color name="Faster than pb colour" category="General"]
-vec4 fasterColour = vec4(0, .63, .12, .75);
-
-[Setting color name="Slower than pb colour" category="General"]
-vec4 slowerColour = vec4(1, .5, 0, .75);
-
-[Setting color name="Current speed background colour" category="General"]
-vec4 textBgColour = vec4(0, 0, 0, 0.867);
-
-[Setting color name="Text colour" category="General"]
-vec4 textColour = vec4(1, 1, 1, 1);
-
-vec4 sameSpeedColour = vec4(.5, .5, .5, .75);
-vec4 shadowColour = vec4(0, 0, 0, .6);
-Resources::Font@ font;
-
-int shadowX = 1;
-int shadowY = 1;
-int fontSize = 34;
-
-class GUI {
     float currentSpeed = 0;
     float difference = 0;
+    uint showTime = 0;
     bool hasDiff = false;
-    bool showDiff = false;
-    bool guiHidden = false;
     bool visible = true;
 
-    GUI() {
+    void Initialize() {
 	    @font = Resources::GetFont("Oswald-Regular.ttf");
     }
 
@@ -62,9 +22,9 @@ class GUI {
             fasterColour = vec4(0, .123, .822, .75);
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
-
-        if(!showDiff || (guiHidden && !showWhenGuiHidden) || !visible)
-            return;
+        if(font is null) return;
+        if(!visible) return;
+        if(showTime + 3000 <= Time::Now) return;
 
         float scaleX = float(Draw::GetWidth()) / 2560;
         float scaleY = float(Draw::GetHeight()) / 1440;

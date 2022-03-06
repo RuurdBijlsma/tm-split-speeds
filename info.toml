@@ -1,10 +1,10 @@
 [meta]
-name = "Split Speeds"
+name = "Split Speeds 2"
 author = "RuteNL"
 category = "Overlay"
 siteid = 145
 
-version = "0.3.0"
+version = "1.0.0"
 
 [script]
-imports = [ "Icons.as" ]
+dependencies = ["VehicleState"]
