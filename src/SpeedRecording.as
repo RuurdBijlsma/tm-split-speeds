@@ -29,6 +29,7 @@ class SpeedRecording {
 
 namespace SpeedRecording {
     SpeedRecording@ FromFile(string path) {
+        print("Getting speed recording from file: " + path);
         if(!IO::FileExists(path)) return null;
         auto json = Json::FromFile(path);
         if(json.GetType() != Json::Type::Object) return null;
@@ -36,6 +37,7 @@ namespace SpeedRecording {
         auto result = SpeedRecording();
         int version = json["version"].GetType() == Json::Type::Number ? json["version"] : 0;
         if(version == 0) {
+            print("Using old speedrecording version: 0");
             result.time = json['pb'];
             result.isOnline = false;
             int i = 1;

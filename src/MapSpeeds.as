@@ -50,6 +50,8 @@ class MapSpeeds {
     // ----------- EVENTS -------------
 
     void StartDriving() {
+        auto app = cast<CTrackMania@>(GetApp());
+        if(app.Network is null || app.Network.PlaygroundClientScriptAPI is null) return;
         @currentSpeeds = SpeedRecording();
         startDrivingTime = app.Network.PlaygroundClientScriptAPI.GameTime;
     }
@@ -75,7 +77,8 @@ class MapSpeeds {
     }
 
     void Finish() {
-        if(currentSpeeds is null) return;
+        auto app = cast<CTrackMania@>(GetApp());
+        if(currentSpeeds is null || app.Network is null || app.Network.PlaygroundClientScriptAPI is null) return;
         lastRaceTime = app.Network.PlaygroundClientScriptAPI.GameTime - startDrivingTime;
         // in offline it can take a few ticks for the pb ghost to update
         if(UseGhosts()){
@@ -90,11 +93,15 @@ class MapSpeeds {
             CheckForPB();
         }
 
+        auto player = GetPlayer();
+        auto app = cast<CTrackMania@>(GetApp());
+        auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
+        auto terminal = playground.GameTerminals[0];
+
         if(player !is null 
             && player.ScriptAPI !is null
             && player.ScriptAPI.Post == CSmScriptPlayer::EPost::CarDriver
             && currentSpeeds !is null
-            && terminal !is null
             && terminal.UISequence_Current == CGamePlaygroundUIConfig::EUISequence::Playing) {
             // driving
             auto state = VehicleState::ViewingPlayerState();
@@ -107,8 +114,9 @@ class MapSpeeds {
     // ------------- METHODS --------------
 
     bool UseGhosts() {
-        // only use ghosts in single player and not editor
-        bool ghost = playgroundScript !is null && app.Editor is null;
+        // only use ghosts in single player and not ed
+        auto app = cast<CTrackMania@>(GetApp());
+        bool ghost = app.PlaygroundScript !is null && app.Editor is null;
         print("Use ghost? " + ghost);
         return ghost;
     }
@@ -136,8 +144,10 @@ class MapSpeeds {
         if(pb) {
             checkingForPB = 0;
             print("PB!: " + pbTime);
-            @bestSpeeds = currentSpeeds;
-            bestSpeeds.ToFile(jsonFile, pbTime, !UseGhosts());
+            if(currentSpeeds !is null) {
+                @bestSpeeds = currentSpeeds;
+                bestSpeeds.ToFile(jsonFile, pbTime, !UseGhosts());
+            }
         }
     }
 
@@ -150,6 +160,8 @@ class MapSpeeds {
     CGameGhostScript@ GetPBGhost() {
         // Unfinished ghosts have a time of uint(-1), so they won't be picked if the bestTime is
         // initialized to uint(-1)
+        auto app = cast<CTrackMania@>(GetApp());
+        auto playgroundScript = app.PlaygroundScript;
         if(playgroundScript is null || playgroundScript.DataFileMgr is null) return null;
         uint bestTime = uint(-1);
         CGameGhostScript@ bestGhost = null;

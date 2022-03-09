@@ -9,31 +9,23 @@ void Main() {
 void Render() {
     if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
         return;
-    GUI::Render();
+    auto player = GetPlayer();
+    if(player !is null && player.ScriptAPI !is null && player.ScriptAPI.Post == CSmScriptPlayer::EPost::CarDriver)
+        GUI::Render();
 }
 
-CTrackMania@ app = null;
-CSmArenaClient@ playground = null;
-MapSpeeds@ mapSpeeds = null;
-CGameTerminal@ terminal = null;
-CSmPlayer@ player = null;
-CGamePlaygroundScript@ playgroundScript = null;
 
 bool retireHandled = false;
 bool finishHandled = false;
+MapSpeeds@ mapSpeeds = null;
 
 void Update(float dt) {
     CP::Update();
-    @app = cast<CTrackMania@>(GetApp());
+    auto app = cast<CTrackMania@>(GetApp());
     if(app is null) return;
-    @playgroundScript = app.PlaygroundScript;
-    @playground = cast<CSmArenaClient@>(app.CurrentPlayground);
-    if(playground !is null) {
-        @terminal = playground.GameTerminals[0];
-        @player = cast<CSmPlayer>(terminal.ControlledPlayer);
-    }
+    auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
+    auto player = GetPlayer();
     if(playground is null 
-        || terminal is null 
         || player is null 
         || player.ScriptAPI is null 
         || player.CurrentLaunchedRespawnLandmarkIndex == uint(-1)) {
@@ -58,6 +50,7 @@ void Update(float dt) {
         retireHandled = false;
     }
 
+    auto terminal = playground.GameTerminals[0];
     auto uiSequence = terminal.UISequence_Current;
     // Player finishes map
     if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !finishHandled) {
@@ -84,4 +77,14 @@ void RenderSettingsFontTab() {
 void OnSettingsChanged(){
     // Show ui for 3 seconds to see effect of settings changes
     GUI::showTime = Time::Now;
+}
+
+CSmPlayer@ GetPlayer() {
+    auto app = cast<CTrackMania@>(GetApp());
+    if(app is null) return null;
+    auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
+    if(playground is null) return null;
+    auto terminal = playground.GameTerminals[0];
+    if(terminal is null) return null;
+    return cast<CSmPlayer@>(terminal.ControlledPlayer);
 }
