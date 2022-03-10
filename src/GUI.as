@@ -26,10 +26,21 @@ namespace GUI {
         if(!visible) return;
         if(showTime + 3000 <= Time::Now) return;
 
-        float scaleX = float(Draw::GetWidth()) / 2560;
-        float scaleY = float(Draw::GetHeight()) / 1440;
+        float h = float(Draw::GetHeight());
+        float w = float(Draw::GetWidth());
+        float scaleX, scaleY, offsetX = 0;
+        if(w / h > 16. / 9) {
+            auto correctedW = (h / 9.) * 16;
+            scaleX = correctedW / 2560;
+            scaleY = h / 1440;
+            offsetX = (w - correctedW) / 2;
+        } else {
+            scaleX = w / 2560;
+            scaleY = h / 1440;
+        }
 
         nvg::Save();
+        nvg::Translate(offsetX, 0);
         nvg::Scale(scaleX, scaleY);
         RenderDefaultUI();
         nvg::Restore();
