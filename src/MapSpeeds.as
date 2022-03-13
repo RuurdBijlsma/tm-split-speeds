@@ -10,6 +10,7 @@ class MapSpeeds {
     int pbTime = 0;
     int lastRaceTime = 0;
     int checkingForPB = 0;
+    int maxInt = 2147483647;
 
     MapSpeeds(string mapId) {
         // set map id, load speeds / speed pb for current map, find checkpoints
@@ -34,7 +35,7 @@ class MapSpeeds {
                 if(keepSync && UseGhosts() && pbTime != 0) {
                     if((bestSpeeds.isOnline && Math::Abs(bestSpeeds.time - pbTime) > 50) || (!bestSpeeds.isOnline && bestSpeeds.time != pbTime)) {
                         // mismatch between best speeds and pb time
-                        warn("Mismatch between pb and stored speeds time, pb time: " + pbTime + ", stored speeds time: " + bestSpeeds.time);
+                        warn("Mismatch between pb and stored speeds time, pb time: " + (pbTime == maxInt ? "NO PB" : tostring(pbTime)) + ", stored speeds time: " + bestSpeeds.time);
                         ClearPB();
                     }
                 }
@@ -44,7 +45,7 @@ class MapSpeeds {
                 }
             }
         }
-        print("Enter map: " + mapId + ", pb = " + pbTime);
+        print("Enter map: " + mapId + ", map pb = " + pbTime + ", stored speeds time: " + (bestSpeeds is null ? "not stored yet" : tostring(bestSpeeds.time)));
     }
 
     // ----------- EVENTS -------------
@@ -107,17 +108,17 @@ class MapSpeeds {
             auto state = VehicleState::ViewingPlayerState();
             if(state is null) return;
             tickSpeed = state.WorldVel.Length() * 3.6;
-            currentSpeeds.ticks.InsertLast(tickSpeed);
+            currentSpeeds.ticks.InsertLast(int(Math::Round(tickSpeed)));
         }
     }
 
     // ------------- METHODS --------------
 
     bool UseGhosts() {
-        // only use ghosts in single player and not ed
+        // only use ghosts in single player and not editor, if keepsync is false also dont use ghosts, because otherwise we can't get proper last race time
+        if(!keepSync) return false;
         auto app = cast<CTrackMania@>(GetApp());
         bool ghost = app.PlaygroundScript !is null && app.Editor is null;
-        print("Use ghost? " + ghost);
         return ghost;
     }
 
@@ -128,24 +129,27 @@ class MapSpeeds {
     }
 
     void CheckForPB() {
-        bool pb = false;
+        bool newPb = false;
+        int pb = keepSync ? pbTime : (bestSpeeds is null ? maxInt : bestSpeeds.time);
+        print("Checking against pb: " + pb);
         if(!UseGhosts()) {
-            if(lastRaceTime < pbTime) {
-                pb = true;
+            if(lastRaceTime < pb) {
+                newPb = true;
                 pbTime = lastRaceTime;
             }
         } else {
             auto updatedPB = GetMapPB();
-            if(updatedPB < pbTime) {
-                pb = true;
+            if(updatedPB < pb) {
+                newPb = true;
                 pbTime = updatedPB;
             }
         }
-        if(pb) {
+        if(newPb) {
             checkingForPB = 0;
             print("PB!: " + pbTime);
             if(currentSpeeds !is null) {
                 @bestSpeeds = currentSpeeds;
+                bestSpeeds.time = pbTime;
                 bestSpeeds.ToFile(jsonFile, pbTime, !UseGhosts());
             }
         }
@@ -154,7 +158,7 @@ class MapSpeeds {
     int GetMapPB() {
         // online works in offline, otherwise returns 0
         auto ghost = GetPBGhost();
-        return ghost is null || ghost.Result is null ? 2147483647 : ghost.Result.Time;
+        return ghost is null || ghost.Result is null ? maxInt : ghost.Result.Time;
     }
 
     CGameGhostScript@ GetPBGhost() {

@@ -84,6 +84,7 @@ CSmPlayer@ GetPlayer() {
     if(app is null) return null;
     auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
     if(playground is null) return null;
+    if(playground.GameTerminals.Length < 1) return null;
     auto terminal = playground.GameTerminals[0];
     if(terminal is null) return null;
     return cast<CSmPlayer@>(terminal.ControlledPlayer);

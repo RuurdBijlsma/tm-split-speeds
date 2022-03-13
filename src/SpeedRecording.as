@@ -1,5 +1,5 @@
 class SpeedRecording {
-    float[]@ ticks = {};
+    int[]@ ticks = {};
     float[]@ cps = {};
     int time = 0;
     bool isOnline = false;
@@ -29,44 +29,57 @@ class SpeedRecording {
 
 namespace SpeedRecording {
     SpeedRecording@ FromFile(string path) {
-        print("Getting speed recording from file: " + path);
         if(!IO::FileExists(path)) return null;
         auto json = Json::FromFile(path);
         if(json.GetType() != Json::Type::Object) return null;
 
-        auto result = SpeedRecording();
         int version = json["version"].GetType() == Json::Type::Number ? json["version"] : 0;
         if(version == 0) {
-            print("Using old speedrecording version: 0");
-            result.time = json['pb'];
-            result.isOnline = false;
-            int i = 1;
-            while(true) {
-                auto val = json[tostring(i++)];
-                if(val.GetType() == Json::Type::Number) {
-                    result.cps.InsertLast(val);
-                } else {
-                    break;
-                }
-            }
+            return Version0(json);
         } else if(version == 1) {
-            result.time = json["time"];
-            result.isOnline = json["isOnline"];
-            if(json['cps'].GetType() != Json::Type::Array) return null;
-            for(uint i = 0; i < json['cps'].Length; i++) {
-                result.cps.InsertLast(json['cps'][i]);
-            }
-            if(json['ticks'].GetType() == Json::Type::Array) {
-                for(uint i = 0; i < json['ticks'].Length; i++) {
-                    result.ticks.InsertLast(json['ticks'][i]);
-                }
-            }
+            return Version1(json);
         } else {
             warn("Unsupported recorded speeds json version: " + path);
         }
 
-        return result;
+        return null;
+    }
 
-        // check for version, if tag doesn't exist use old parsing and set ticks array to null
+    SpeedRecording@ Version0(Json::Value json) {
+        auto result = SpeedRecording();
+        if(json['pb'].GetType() != Json::Type::Number) {
+            warn("Speedsplits file V0 has invalid pb time!");
+            return null;
+        }
+        result.time = json['pb'];
+        result.isOnline = true;
+        int i = 1;
+        while(true) {
+            auto val = json[tostring(i++)];
+            if(val.GetType() == Json::Type::Number) {
+                result.cps.InsertLast(val);
+            } else {
+                break;
+            }
+        }
+        print("V0: Loaded splits from file, online: " + result.isOnline + ", time: " + result.time + ", cp count: " + result.cps.Length);
+        return result;
+    }
+
+    SpeedRecording@ Version1(Json::Value json) {
+        auto result = SpeedRecording();
+        result.time = json["time"];
+        result.isOnline = json["isOnline"];
+        if(json['cps'].GetType() != Json::Type::Array) return null;
+        for(uint i = 0; i < json['cps'].Length; i++) {
+            result.cps.InsertLast(json['cps'][i]);
+        }
+        if(json['ticks'].GetType() == Json::Type::Array) {
+            for(uint i = 0; i < json['ticks'].Length; i++) {
+                result.ticks.InsertLast(json['ticks'][i]);
+            }
+        }
+        print("V1: Loaded splits from file, online: " + result.isOnline + ", time: " + result.time + ", cp count: " + result.cps.Length);
+        return result;
     }
 }

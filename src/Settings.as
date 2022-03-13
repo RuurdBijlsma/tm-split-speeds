@@ -1,4 +1,4 @@
-[Setting name="Delete speeds when out of sync with PB ghost" category="General"]
+[Setting name="Synchronize split speeds with session PB" category="General" description="Delete stored speed splits when the session time splits are also gone. With this disabled the speed splits are stored permanently."]
 bool keepSync = true;
 
 [Setting name="Show current speed at cp" category="UI"]
