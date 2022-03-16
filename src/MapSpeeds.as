@@ -57,7 +57,9 @@ class MapSpeeds {
         startDrivingTime = app.Network.PlaygroundClientScriptAPI.GameTime;
     }
 
-    void Retire() {}
+    void Retire() {
+        GUI::showTime = 0;
+    }
 
     void Checkpoint() {
         if(currentSpeeds is null) return;
@@ -99,7 +101,8 @@ class MapSpeeds {
         auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
         auto terminal = playground.GameTerminals[0];
 
-        if(player !is null 
+        if(saveTicks 
+            && player !is null 
             && player.ScriptAPI !is null
             && player.ScriptAPI.Post == CSmScriptPlayer::EPost::CarDriver
             && currentSpeeds !is null
@@ -131,7 +134,7 @@ class MapSpeeds {
     void CheckForPB() {
         bool newPb = false;
         int pb = keepSync ? pbTime : (bestSpeeds is null ? maxInt : bestSpeeds.time);
-        print("Checking against pb: " + pb);
+        // print("Checking against pb: " + pb);
         if(!UseGhosts()) {
             if(lastRaceTime < pb) {
                 newPb = true;
