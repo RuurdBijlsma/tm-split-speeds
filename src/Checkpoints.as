@@ -61,7 +61,11 @@ namespace CP {
 		}
 		
 		auto player = cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer);
-		auto scriptPlayer = cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer).ScriptAPI;
+		if(player is null) {
+			inGame = false;
+			return;
+		}
+		auto scriptPlayer = player.ScriptAPI;
 		
 		if(scriptPlayer is null) {
 			inGame = false;

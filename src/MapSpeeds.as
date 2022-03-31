@@ -100,19 +100,20 @@ class MapSpeeds {
         auto app = cast<CTrackMania@>(GetApp());
         auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
         auto terminal = playground.GameTerminals[0];
-        auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
+        if(player !is null) {
+            auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
 
-        if(saveTicks 
-            && player !is null 
-            && scriptPlayer !is null
-            && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver
-            && currentSpeeds !is null
-            && terminal.UISequence_Current == CGamePlaygroundUIConfig::EUISequence::Playing) {
-            // driving
-            auto state = VehicleState::ViewingPlayerState();
-            if(state is null) return;
-            tickSpeed = state.WorldVel.Length() * 3.6;
-            currentSpeeds.ticks.InsertLast(int(Math::Round(tickSpeed)));
+            if(saveTicks 
+                && scriptPlayer !is null
+                && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver
+                && currentSpeeds !is null
+                && terminal.UISequence_Current == CGamePlaygroundUIConfig::EUISequence::Playing) {
+                // driving
+                auto state = VehicleState::ViewingPlayerState();
+                if(state is null) return;
+                tickSpeed = state.WorldVel.Length() * 3.6;
+                currentSpeeds.ticks.InsertLast(int(Math::Round(tickSpeed)));
+            }
         }
     }
 

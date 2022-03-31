@@ -10,9 +10,11 @@ void Render() {
     if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
         return;
     auto player = GetPlayer();
-    auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
-    if(player !is null && scriptPlayer !is null && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver)
-        GUI::Render();
+    if(player !is null) {
+        auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
+        if(scriptPlayer !is null && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver)
+            GUI::Render();
+    }
 }
 
 
