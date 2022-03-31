@@ -10,7 +10,8 @@ void Render() {
     if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
         return;
     auto player = GetPlayer();
-    if(player !is null && player.ScriptAPI !is null && player.ScriptAPI.Post == CSmScriptPlayer::EPost::CarDriver)
+    auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
+    if(player !is null && scriptPlayer !is null && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver)
         GUI::Render();
 }
 
@@ -40,7 +41,8 @@ void Update(float dt) {
     }
     if(mapSpeeds is null) return;
     
-    auto post = player.ScriptAPI.Post;
+    auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
+    auto post = scriptPlayer.Post;
     if(!retireHandled && post == CSmScriptPlayer::EPost::Char) {
         retireHandled = true;
         mapSpeeds.Retire();

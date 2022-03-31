@@ -100,11 +100,12 @@ class MapSpeeds {
         auto app = cast<CTrackMania@>(GetApp());
         auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
         auto terminal = playground.GameTerminals[0];
+        auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
 
         if(saveTicks 
             && player !is null 
-            && player.ScriptAPI !is null
-            && player.ScriptAPI.Post == CSmScriptPlayer::EPost::CarDriver
+            && scriptPlayer !is null
+            && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver
             && currentSpeeds !is null
             && terminal.UISequence_Current == CGamePlaygroundUIConfig::EUISequence::Playing) {
             // driving
