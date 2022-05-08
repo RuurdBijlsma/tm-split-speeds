@@ -5,7 +5,6 @@ class MapSpeeds {
     SpeedRecording@ currentSpeeds = null;
 
     float cpSpeed = 0;
-    float tickSpeed = 0;
     int startDrivingTime = 0;
     int pbTime = 0;
     int lastRaceTime = 0;
@@ -90,30 +89,14 @@ class MapSpeeds {
         CheckForPB();
     }
 
+    void Respawn() {
+        
+    }
+
     void Tick() {
         if(checkingForPB > 0) {
             checkingForPB--;
             CheckForPB();
-        }
-
-        auto player = GetPlayer();
-        auto app = cast<CTrackMania@>(GetApp());
-        auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
-        auto terminal = playground.GameTerminals[0];
-        if(player !is null) {
-            auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
-
-            if(saveTicks 
-                && scriptPlayer !is null
-                && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver
-                && currentSpeeds !is null
-                && terminal.UISequence_Current == CGamePlaygroundUIConfig::EUISequence::Playing) {
-                // driving
-                auto state = VehicleState::ViewingPlayerState();
-                if(state is null) return;
-                tickSpeed = state.WorldVel.Length() * 3.6;
-                currentSpeeds.ticks.InsertLast(int(Math::Round(tickSpeed)));
-            }
         }
     }
 

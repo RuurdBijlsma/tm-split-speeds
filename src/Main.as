@@ -21,6 +21,7 @@ void Render() {
 bool retireHandled = false;
 bool finishHandled = false;
 MapSpeeds@ mapSpeeds = null;
+int respawnCount = 0;
 
 void Update(float dt) {
     CP::Update();
@@ -50,8 +51,14 @@ void Update(float dt) {
         mapSpeeds.Retire();
     } else if(retireHandled && post == CSmScriptPlayer::EPost::CarDriver) {
         mapSpeeds.StartDriving();
+        respawnCount = 0;
         // Driving
         retireHandled = false;
+    }
+
+    if(respawnCount != int(scriptPlayer.Score.NbRespawnsRequested)) {
+        respawnCount = scriptPlayer.Score.NbRespawnsRequested;
+        mapSpeeds.Respawn();
     }
 
     auto terminal = playground.GameTerminals[0];

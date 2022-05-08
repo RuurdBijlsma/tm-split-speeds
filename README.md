@@ -8,29 +8,6 @@ This plugin has a few tweakable settings:
 * Toggle to show when in game GUI is hidden or not.
 * Change size or position using settings.
 
-## Changelog
-### 0.3.0
-* When sync is turned on (default) speed splits now only get saved and shown when a PB is driven while using the plugin.
-    * Turn this off by unticking "Delete speeds when out of sync with PB ghost" in settings
-* Fix getting personal best ghost in other languages
-* Fix "clear current map pb's" button not working
-* Fix pb getting overwritten sometimes by unfinished run
-* Fix bug on map review server where speed splits are shown for previous map when previous map wasn't finished yet when the timer ran out.
-
-### 0.2.8 & 0.2.9
-* Bug fixes
-
-### 0.2.7
-* Store pb speeds when retiring on a map with no pb yet, similar to time splits
-* Use the font the game uses (Oswald Regular)
-
-### 0.2.6
-* Synchronize splits with actual pb splits on solo maps.
-* Fix stretched resolution scaling.
-* Fix overlay not showing when Openplanet F3 overlay is off.
-* Add size slider.
-* Add button to clear stored speeds for current map or all maps.
-
 ## Source code
 The source code of this plugin is [on GitHub](https://github.com/RuurdBijlsma/tm-split-speeds).
 

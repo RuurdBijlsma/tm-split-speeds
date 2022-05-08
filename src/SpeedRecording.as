@@ -74,11 +74,6 @@ namespace SpeedRecording {
         for(uint i = 0; i < json['cps'].Length; i++) {
             result.cps.InsertLast(json['cps'][i]);
         }
-        if(json['ticks'].GetType() == Json::Type::Array) {
-            for(uint i = 0; i < json['ticks'].Length; i++) {
-                result.ticks.InsertLast(json['ticks'][i]);
-            }
-        }
         print("V1: Loaded splits from file, online: " + result.isOnline + ", time: " + result.time + ", cp count: " + result.cps.Length);
         return result;
     }
