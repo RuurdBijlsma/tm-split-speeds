@@ -1,7 +1,7 @@
 namespace GUI {
     vec4 sameSpeedColour = vec4(.5, .5, .5, .75);
     vec4 shadowColour = vec4(0, 0, 0, .6);
-    Resources::Font@ font;
+    nvg::Font font;
 
     int shadowX = 1;
     int shadowY = 1;
@@ -14,7 +14,7 @@ namespace GUI {
     bool visible = true;
 
     void Initialize() {
-	    @font = Resources::GetFont("Oswald-Regular.ttf");
+	    font = nvg::LoadFont("Oswald-Regular.ttf");
     }
 
     void Render() {
@@ -22,7 +22,7 @@ namespace GUI {
             fasterColour = vec4(0, .123, .822, .75);
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
-        if(font is null) return;
+        if(font == 0) return;
         if(!visible) return;
         if(showTime + 3000 <= Time::Now) return;
 
