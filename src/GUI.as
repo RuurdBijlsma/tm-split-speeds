@@ -51,8 +51,10 @@ namespace GUI {
         uint box2Width = uint(scale * 78);
         uint boxHeight = uint(scale * 57);
         uint padding = 7;
-        uint x = uint(anchorXOnline * 2560);
-        uint y = uint(anchorYOnline * 1440 - boxHeight / 2);
+        bool online = (GetApp()).PlaygroundScript is null;
+        print("Is online? : " + online);
+        uint x = uint((online ? anchorXOnline : anchorX) * 2560);
+        uint y = uint((online ? anchorYOnline : anchorY) * 1440 - boxHeight / 2);
         uint textOffsetY = 0;
         nvg::FontFace(font);
 
