@@ -64,7 +64,7 @@ class MapSpeeds {
         if(currentSpeeds is null) return;
         auto state = VehicleState::ViewingPlayerState();
         if(state is null) return;
-        cpSpeed = state.WorldVel.Length() * 3.6;
+        cpSpeed = state.FrontSpeed * 3.6;
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
         if(bestSpeeds !is null && bestSpeeds.cps.Length >= currentSpeeds.cps.Length) {
@@ -79,18 +79,15 @@ class MapSpeeds {
     }
 
     void Finish() {
+        warn("FINISH");
         auto app = cast<CTrackMania@>(GetApp());
         if(currentSpeeds is null || app.Network is null || app.Network.PlaygroundClientScriptAPI is null) return;
         lastRaceTime = app.Network.PlaygroundClientScriptAPI.GameTime - startDrivingTime;
         // in offline it can take a few ticks for the pb ghost to update
-        if(UseGhosts()){
-            checkingForPB = 30;
+        if(UseGhosts()) {
+            checkingForPB = 100;
         }
         CheckForPB();
-    }
-
-    void Respawn() {
-        
     }
 
     void Tick() {
@@ -98,6 +95,7 @@ class MapSpeeds {
             checkingForPB--;
             CheckForPB();
         }
+        // print("Map PB" + GetMapPB());
     }
 
     // ------------- METHODS --------------
@@ -119,7 +117,6 @@ class MapSpeeds {
     void CheckForPB() {
         bool newPb = false;
         int pb = keepSync ? pbTime : (bestSpeeds is null ? maxInt : bestSpeeds.time);
-        // print("Checking against pb: " + pb);
         if(!UseGhosts()) {
             if(lastRaceTime < pb) {
                 newPb = true;
@@ -134,7 +131,7 @@ class MapSpeeds {
         }
         if(newPb) {
             checkingForPB = 0;
-            print("PB!: " + pbTime);
+            print("NEW PB!: " + pbTime);
             if(currentSpeeds !is null) {
                 @bestSpeeds = currentSpeeds;
                 bestSpeeds.time = pbTime;
@@ -144,28 +141,15 @@ class MapSpeeds {
     }
 
     int GetMapPB() {
-        // online works in offline, otherwise returns 0
-        auto ghost = GetPBGhost();
-        return ghost is null || ghost.Result is null ? maxInt : ghost.Result.Time;
-    }
-
-    CGameGhostScript@ GetPBGhost() {
-        // Unfinished ghosts have a time of uint(-1), so they won't be picked if the bestTime is
-        // initialized to uint(-1)
-        auto app = cast<CTrackMania@>(GetApp());
-        auto playgroundScript = app.PlaygroundScript;
-        if(playgroundScript is null || playgroundScript.DataFileMgr is null) return null;
-        uint bestTime = uint(-1);
-        CGameGhostScript@ bestGhost = null;
-        auto ghosts = playgroundScript.DataFileMgr.Ghosts;
-        for(uint i = 0; i < ghosts.Length; i++) {
-            auto ghostTime = ghosts[i].Result.Time;
-            auto trigram = ghosts[i].Trigram;
-            if(trigram == '|' && (ghostTime < bestTime)) {
-                bestTime = ghostTime;
-                @bestGhost = ghosts[i];
-            }
+        // print("Getting map pb");
+        auto app = cast<CTrackMania>(GetApp());
+        CGameCtnPlayground@ playground = cast<CGameCtnPlayground@>(app.CurrentPlayground);
+        int time = maxInt;
+        if (playground.PlayerRecordedGhost !is null){
+            time = playground.PlayerRecordedGhost.RaceTime;
+        } else {
         }
-        return bestGhost;
+        // print("return: " + time);
+        return time;
     }
 };

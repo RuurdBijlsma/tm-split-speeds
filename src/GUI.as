@@ -51,8 +51,8 @@ namespace GUI {
         uint box2Width = uint(scale * 78);
         uint boxHeight = uint(scale * 57);
         uint padding = 7;
-        uint x = uint(anchorX * 2560);
-        uint y = uint(anchorY * 1440 - boxHeight / 2);
+        uint x = uint(anchorXOnline * 2560);
+        uint y = uint(anchorYOnline * 1440 - boxHeight / 2);
         uint textOffsetY = 0;
         nvg::FontFace(font);
 
@@ -85,10 +85,11 @@ namespace GUI {
             nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, text);
         }
         // Draw difference
+        int marginBetween = 3;
         if(showSpeedDiff && hasDiff) {
             // Draw box
             nvg::BeginPath();
-            nvg::Rect(x, y, box2Width, boxHeight);
+            nvg::Rect(marginBetween + x, y, box2Width, boxHeight);
             vec4 boxColour = slowerColour;
             if(difference > 1)
                 boxColour = fasterColour;
@@ -104,10 +105,10 @@ namespace GUI {
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             if(textShadow) {
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, text);
+                nvg::TextBox(marginBetween + x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, text);
             }
             nvg::FillColor(textColour);
-            nvg::TextBox(x - padding, y + boxHeight / 2 + textOffsetY, box2Width, text);
+            nvg::TextBox(marginBetween + x - padding, y + boxHeight / 2 + textOffsetY, box2Width, text);
         }
     }
 }

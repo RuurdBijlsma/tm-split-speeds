@@ -1,7 +1,3 @@
-// todo 
-// everything
-// speed diff at every tick in the bottom corner or something :)
-
 void Main() {
     GUI::Initialize();
 }
@@ -11,8 +7,8 @@ void Render() {
         return;
     auto player = GetPlayer();
     if(player !is null) {
-        auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
-        if(scriptPlayer !is null && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver)
+        auto scriptPlayer = player.ScriptAPI;
+        if(scriptPlayer !is null && scriptPlayer.RaceState == CTrackManiaPlayer::ERaceState::Running)
             GUI::Render();
     }
 }
@@ -21,54 +17,44 @@ void Render() {
 bool retireHandled = false;
 bool finishHandled = false;
 MapSpeeds@ mapSpeeds = null;
-int respawnCount = 0;
 
 void Update(float dt) {
     CP::Update();
     auto app = cast<CTrackMania@>(GetApp());
     if(app is null) return;
-    auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
+    auto playground = cast<CGamePlayground@>(app.CurrentPlayground);
     auto player = GetPlayer();
     if(playground is null 
         || player is null 
-        || player.ScriptAPI is null 
-        || player.CurrentLaunchedRespawnLandmarkIndex == uint(-1)) {
+        || player.ScriptAPI is null) {
         if(mapSpeeds !is null) 
             @mapSpeeds = null;
         return;
     }
-    auto currentMap = playground.Map.IdName;
+    auto currentMap = app.RootMap.IdName;
     if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "") {
         @mapSpeeds = MapSpeeds(currentMap);
         mapSpeeds.InitializeFiles();
     }
     if(mapSpeeds is null) return;
     
-    auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
-    auto post = scriptPlayer.Post;
-    if(!retireHandled && post == CSmScriptPlayer::EPost::Char) {
+    auto scriptPlayer = player.ScriptAPI;
+    auto raceState = scriptPlayer.RaceState;
+    if(!retireHandled && raceState == CTrackManiaPlayer::ERaceState::BeforeStart) {
         retireHandled = true;
         mapSpeeds.Retire();
-    } else if(retireHandled && post == CSmScriptPlayer::EPost::CarDriver) {
+    } else if(retireHandled && raceState == CTrackManiaPlayer::ERaceState::Running) {
         mapSpeeds.StartDriving();
-        respawnCount = 0;
         // Driving
         retireHandled = false;
     }
 
-    if(respawnCount != int(scriptPlayer.Score.NbRespawnsRequested)) {
-        respawnCount = scriptPlayer.Score.NbRespawnsRequested;
-        mapSpeeds.Respawn();
-    }
-
-    auto terminal = playground.GameTerminals[0];
-    auto uiSequence = terminal.UISequence_Current;
     // Player finishes map
-    if(uiSequence == CGamePlaygroundUIConfig::EUISequence::Finish && !finishHandled) {
+    if(raceState == CTrackManiaPlayer::ERaceState::Finished && !finishHandled) {
         finishHandled = true;
         mapSpeeds.Finish();
     }
-    if(uiSequence != CGamePlaygroundUIConfig::EUISequence::Finish && finishHandled)
+    if(raceState != CTrackManiaPlayer::ERaceState::Finished && finishHandled)
         finishHandled = false;
 
     mapSpeeds.Tick();
@@ -90,13 +76,13 @@ void OnSettingsChanged(){
     GUI::showTime = Time::Now;
 }
 
-CSmPlayer@ GetPlayer() {
+CTrackManiaPlayer@ GetPlayer() {
     auto app = cast<CTrackMania@>(GetApp());
     if(app is null) return null;
-    auto playground = cast<CSmArenaClient@>(app.CurrentPlayground);
+    auto playground = cast<CGamePlayground@>(app.CurrentPlayground);
     if(playground is null) return null;
     if(playground.GameTerminals.Length < 1) return null;
     auto terminal = playground.GameTerminals[0];
     if(terminal is null) return null;
-    return cast<CSmPlayer@>(terminal.ControlledPlayer);
+    return cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
 }

@@ -172,7 +172,10 @@ namespace CP {
 		inGame = true;
 		
 		/* Checkpoints gains the time value of each CP as it is passed */
-		curCP = player.CurLap.Checkpoints.Length;
+		if(player.CurLap.Checkpoints.Length != 0 && player.CurLap.Checkpoints.Length != curCP) {
+			Checkpoint();
+		}
+		curCP = scriptPlayer.CurLap.Checkpoints.Length;
 		
 #elif MP4
 		auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
@@ -260,6 +263,10 @@ namespace CP {
 		inGame = true;
 		
 		/* Checkpoints gains the time value of each CP as it is passed */
+		// cp changed
+		if(scriptPlayer.CurLap.Checkpoints.Length != 0 && scriptPlayer.CurLap.Checkpoints.Length != curCP) {
+			Checkpoint();
+		}
 		curCP = scriptPlayer.CurLap.Checkpoints.Length;
 		
 #endif
