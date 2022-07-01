@@ -64,7 +64,11 @@ class MapSpeeds {
         if(currentSpeeds is null) return;
         auto state = VehicleState::ViewingPlayerState();
         if(state is null) return;
+#if MP4
         cpSpeed = state.FrontSpeed * 3.6;
+#elif TMNEXT
+        cpSpeed = state.WorldVel.Length() * 3.6;
+#endif
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
         if(bestSpeeds !is null && bestSpeeds.cps.Length >= currentSpeeds.cps.Length) {
@@ -141,15 +145,40 @@ class MapSpeeds {
     }
 
     int GetMapPB() {
+#if MP4
         // print("Getting map pb");
         auto app = cast<CTrackMania>(GetApp());
         CGameCtnPlayground@ playground = cast<CGameCtnPlayground@>(app.CurrentPlayground);
         int time = maxInt;
         if (playground.PlayerRecordedGhost !is null){
             time = playground.PlayerRecordedGhost.RaceTime;
-        } else {
         }
-        // print("return: " + time);
         return time;
+#elif TMNEXT
+        auto ghost = GetPBGhost();
+        return ghost is null || ghost.Result is null ? maxInt : ghost.Result.Time;
+#endif
     }
+
+#if TMNEXT
+    CGameGhostScript@ GetPBGhost() {
+        // Unfinished ghosts have a time of uint(-1), so they won't be picked if the bestTime is
+        // initialized to uint(-1)
+        auto app = cast<CTrackMania@>(GetApp());
+        auto playgroundScript = app.PlaygroundScript;
+        if(playgroundScript is null || playgroundScript.DataFileMgr is null) return null;
+        uint bestTime = uint(-1);
+        CGameGhostScript@ bestGhost = null;
+        auto ghosts = playgroundScript.DataFileMgr.Ghosts;
+        for(uint i = 0; i < ghosts.Length; i++) {
+            auto ghostTime = ghosts[i].Result.Time;
+            auto trigram = ghosts[i].Trigram;
+            if(trigram == '|' && (ghostTime < bestTime)) {
+                bestTime = ghostTime;
+                @bestGhost = ghosts[i];
+            }
+        }
+        return bestGhost;
+    }
+#endif
 };

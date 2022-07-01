@@ -52,7 +52,10 @@ namespace GUI {
         uint boxHeight = uint(scale * 57);
         uint padding = 7;
         bool online = (GetApp()).PlaygroundScript is null;
-        print("Is online? : " + online);
+#if TMNEXT
+        float anchorXOnline = anchorX;
+        float anchorYOnline = anchorY;
+#endif
         uint x = uint((online ? anchorXOnline : anchorX) * 2560);
         uint y = uint((online ? anchorYOnline : anchorY) * 1440 - boxHeight / 2);
         uint textOffsetY = 0;
@@ -87,7 +90,11 @@ namespace GUI {
             nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, text);
         }
         // Draw difference
+#if TMNEXT
+        int marginBetween = 0;
+#elif MP4
         int marginBetween = 3;
+#endif
         if(showSpeedDiff && hasDiff) {
             // Draw box
             nvg::BeginPath();
