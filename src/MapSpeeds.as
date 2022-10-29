@@ -11,7 +11,7 @@ class MapSpeeds {
     int checkingForPB = 0;
     int maxInt = 2147483647;
 
-    MapSpeeds(string mapId) {
+    MapSpeeds(const string &in mapId) {
         // set map id, load speeds / speed pb for current map, find checkpoints
         this.mapId = mapId;
         pbTime = GetMapPB();

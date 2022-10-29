@@ -4,7 +4,7 @@ class SpeedRecording {
     int time = 0;
     bool isOnline = false;
 
-    void ToFile(string path, int time, bool isOnline) {
+    void ToFile(const string &in path, int time, bool isOnline) {
         print("ToFile! time: " + time + ", " + path);
         Json::Value speeds = Json::Object();
 
@@ -28,7 +28,7 @@ class SpeedRecording {
 };
 
 namespace SpeedRecording {
-    SpeedRecording@ FromFile(string path) {
+    SpeedRecording@ FromFile(const string &in path) {
         if(!IO::FileExists(path)) return null;
         auto json = Json::FromFile(path);
         if(json.GetType() != Json::Type::Object) return null;

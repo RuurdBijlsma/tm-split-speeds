@@ -20,6 +20,9 @@ bool retireHandled = false;
 bool finishHandled = false;
 MapSpeeds@ mapSpeeds = null;
 
+uint lastPrevRaceTime = 3000000000;
+
+
 void Update(float dt) {
     CP::Update();
     auto app = cast<CTrackMania@>(GetApp());
@@ -33,7 +36,7 @@ void Update(float dt) {
             @mapSpeeds = null;
         return;
     }
-    auto currentMap = app.RootMap.IdName;
+    auto currentMap = app.RootMap.MapInfo.MapUid;
     if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "") {
         @mapSpeeds = MapSpeeds(currentMap);
         mapSpeeds.InitializeFiles();
@@ -51,14 +54,20 @@ void Update(float dt) {
         retireHandled = false;
     }
 
-    // Player finishes map
-    if(raceState == CTrackManiaPlayer::ERaceState::Finished && !finishHandled) {
-        finishHandled = true;
-        mapSpeeds.Checkpoint();
-        mapSpeeds.Finish();
+    // Check for map finish then call mapspeed.finish()
+    auto prevRecord = playground.PrevReplayRecord;
+    if(prevRecord !is null && prevRecord.Ghosts.Length > 0) {
+        auto ghost = prevRecord.Ghosts[0];
+        if(ghost.RaceTime != lastPrevRaceTime){ 
+            lastPrevRaceTime = ghost.RaceTime;
+            if(lastPrevRaceTime < 3000000000) {
+                print("Finish!: " + ghost.RaceTime);
+                mapSpeeds.lastRaceTime = ghost.RaceTime;
+                mapSpeeds.CheckForPB();
+            }
+        }
     }
-    if(raceState != CTrackManiaPlayer::ERaceState::Finished && finishHandled)
-        finishHandled = false;
+
 
     mapSpeeds.Tick();
 }
