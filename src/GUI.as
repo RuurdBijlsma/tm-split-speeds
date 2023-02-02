@@ -22,6 +22,23 @@ namespace GUI {
             fasterColour = vec4(0, .123, .822, .75);
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
+
+#if DEPENDENCY_DID
+        if (showTime + 3000 <= Time::Now) {
+            DIDTextTotal = "";
+            DIDTextDiff = "";
+        } else {
+            DIDColor = slowerColour;
+            if(difference > 1)
+                DIDColor = fasterColour;
+            else if(difference < 1 && difference > -1)
+                DIDColor = sameSpeedColour;
+            
+            DIDTextTotal = Text::Format("%.0f", currentSpeed);
+            DIDTextDiff = Text::Format("%.0f", difference);
+        }
+#endif
+
         if(font == 0) return;
         if(!visible) return;
         if(showTime + 3000 <= Time::Now) return;
