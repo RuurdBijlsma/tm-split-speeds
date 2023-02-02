@@ -24,6 +24,9 @@ namespace GUI {
         }
 
 #if DEPENDENCY_DID
+        if (!hasDiff) {
+            DIDTextDiff = "";
+        }
         if (showTime + 3000 <= Time::Now) {
             DIDTextTotal = "";
             DIDTextDiff = "";
@@ -35,7 +38,7 @@ namespace GUI {
                 DIDColor = sameSpeedColour;
             
             DIDTextTotal = Text::Format("%.0f", currentSpeed);
-            DIDTextDiff = Text::Format("%.0f", difference);
+            if (hasDiff) DIDTextDiff = Text::Format("%.0f", difference);
         }
 #endif
 
