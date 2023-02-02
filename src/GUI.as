@@ -38,7 +38,11 @@ namespace GUI {
                 DIDColor = sameSpeedColour;
             
             DIDTextTotal = Text::Format("%.0f", currentSpeed);
-            if (hasDiff) DIDTextDiff = Text::Format("%.0f", difference);
+            if (hasDiff) {
+                DIDTextDiff = Text::Format("%.0f", difference);
+                if(difference < 1 && difference > -1)
+                    DIDTextDiff = '0';
+            }
         }
 #endif
     
