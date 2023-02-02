@@ -8,3 +8,4 @@ version = "1.0.5"
 
 [script]
 dependencies = ["VehicleState"]
+optional_dependencies = ["DID"]
