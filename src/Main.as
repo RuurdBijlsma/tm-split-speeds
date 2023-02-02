@@ -10,8 +10,6 @@ void Main() {
 }
 
 void Render() {
-    if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
-        return;
     auto player = GetPlayer();
     if(player !is null) {
         auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);

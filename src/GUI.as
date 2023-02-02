@@ -41,6 +41,9 @@ namespace GUI {
             if (hasDiff) DIDTextDiff = Text::Format("%.0f", difference);
         }
 #endif
+    
+        if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
+            return;
 
         if(font == 0) return;
         if(!visible) return;
