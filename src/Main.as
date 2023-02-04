@@ -2,11 +2,6 @@
 
 void Main() {
     GUI::Initialize();
-
-#if DEPENDENCY_DID
-	DID::registerLaneProviderAddon(SplitSpeedDID());
-	DID::registerLaneProviderAddon(SplitSpeedDiffDID());
-#endif
 }
 
 void Render() {

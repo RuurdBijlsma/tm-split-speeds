@@ -12,8 +12,11 @@ namespace SplitSpeeds {
     float get_difference() {
         return GUI::difference;
     }
-    string get_textDifference() {
-        return GUI::text;
+    string get_differenceText() {
+        return GUI::diffText;
+    }
+    string get_speedText() {
+        return GUI::speedText;
     }
 
     vec4 get_slowerColour() {
@@ -24,5 +27,8 @@ namespace SplitSpeeds {
     }
     vec4 get_sameSpeedColour() {
         return GUI::sameSpeedColour;
+    }
+    vec4 get_currentColour() {
+        return GUI::currentColour;
     }
 }

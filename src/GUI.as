@@ -1,4 +1,5 @@
 namespace GUI {
+    vec4 currentColour = vec4(0, 0, 0, 0);
     vec4 sameSpeedColour = vec4(.5, .5, .5, .75);
     vec4 shadowColour = vec4(0, 0, 0, .6);
     nvg::Font font;
@@ -13,7 +14,8 @@ namespace GUI {
     bool visible = false;
     bool hasDiff = false;
     bool enabled = true;
-    string text = "";
+    string diffText = "";
+    string speedText = "";
 
     void Initialize() {
 	    font = nvg::LoadFont("Oswald-Regular.ttf");
@@ -27,32 +29,13 @@ namespace GUI {
 
         // showTime is the time when the ui element was shown
         visible = Time::Now < showTime + 3000;
-        text = Text::Format("%.0f", difference);
+        diffText = Text::Format("%.0f", difference);
         if(difference < 1 && difference > -1)
-            text = '0';
-
-#if DEPENDENCY_DID
-        if (!hasDiff) {
-            DIDTextDiff = "";
-        }
-        if (!visible) {
-            DIDTextTotal = "";
-            DIDTextDiff = "";
-        } else {
-            DIDColor = slowerColour;
-            if(difference > 1)
-                DIDColor = fasterColour;
-            else if(difference < 1 && difference > -1)
-                DIDColor = sameSpeedColour;
-            
-            DIDTextTotal = Text::Format("%.0f", currentSpeed);
-            if (hasDiff) {
-                DIDTextDiff = Text::Format("%.0f", difference);
-                if(difference < 1 && difference > -1)
-                    DIDTextDiff = '0';
-            }
-        }
-#endif
+            diffText = '0';
+        speedText = Text::Format("%.0f", currentSpeed);
+        currentColour = sameSpeedColour;
+        if(difference > 1) currentColour = fasterColour;
+        else if(difference < -1) currentColour = slowerColour;
     
         if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
             return;
@@ -115,14 +98,13 @@ namespace GUI {
             nvg::Fill();
             nvg::ClosePath();
             // Draw text
-            string text = Text::Format("%.0f", currentSpeed);
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             if(textShadow){
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(x - box1Width + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box1Width, text);
+                nvg::TextBox(x - box1Width + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box1Width, speedText);
             }
             nvg::FillColor(textColour);
-            nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, text);
+            nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, speedText);
         }
         // Draw difference
 #if TMNEXT
@@ -134,22 +116,17 @@ namespace GUI {
             // Draw box
             nvg::BeginPath();
             nvg::Rect(marginBetween + x, y, box2Width, boxHeight);
-            vec4 boxColour = slowerColour;
-            if(difference > 1)
-                boxColour = fasterColour;
-            else if(difference < 1 && difference > -1)
-                boxColour = sameSpeedColour;
-            nvg::FillColor(boxColour);
+            nvg::FillColor(currentColour);
             nvg::Fill();
             nvg::ClosePath();
             // Draw text
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             if(textShadow) {
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(marginBetween + x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, text);
+                nvg::TextBox(marginBetween + x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, diffText);
             }
             nvg::FillColor(textColour);
-            nvg::TextBox(marginBetween + x - padding, y + boxHeight / 2 + textOffsetY, box2Width, text);
+            nvg::TextBox(marginBetween + x - padding, y + boxHeight / 2 + textOffsetY, box2Width, diffText);
         }
     }
 }
