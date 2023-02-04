@@ -27,7 +27,7 @@ namespace GUI {
 
         // showTime is the time when the ui element was shown
         visible = Time::Now < showTime + 3000;
-        string text = Text::Format("%.0f", difference);
+        text = Text::Format("%.0f", difference);
         if(difference < 1 && difference > -1)
             text = '0';
 

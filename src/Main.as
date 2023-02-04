@@ -11,6 +11,7 @@ void Main() {
 
 void Render() {
     auto player = GetPlayer();
+    GUI::visible = false;
     if(player !is null) {
         auto scriptPlayer = cast<CSmScriptPlayer@>(player.ScriptAPI);
         if(scriptPlayer !is null && scriptPlayer.Post == CSmScriptPlayer::EPost::CarDriver)
