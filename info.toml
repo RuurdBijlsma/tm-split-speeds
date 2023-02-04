@@ -4,8 +4,9 @@ author = "RuteNL"
 category = "Overlay"
 siteid = 145
 
-version = "1.0.7"
+version = "1.0.8"
 
 [script]
 dependencies = ["VehicleState"]
 optional_dependencies = ["DID"]
+exports = [ "src/Exports/SplitSpeedsExports.as" ]

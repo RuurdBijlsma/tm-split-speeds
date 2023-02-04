@@ -73,8 +73,8 @@ void Update(float dt) {
 }
 
 void RenderMenu() {
-	if (UI::MenuItem("\\$f70" + Icons::Registered + "\\$z Speed Splits", "", GUI::visible)) {
-		GUI::visible = !GUI::visible;
+	if (UI::MenuItem("\\$f70" + Icons::Registered + "\\$z Speed Splits", "", GUI::enabled)) {
+		GUI::enabled = !GUI::enabled;
 	}
 }
 

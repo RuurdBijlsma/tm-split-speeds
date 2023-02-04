@@ -10,8 +10,10 @@ namespace GUI {
     float currentSpeed = 0;
     float difference = 0;
     uint showTime = 0;
+    bool visible = false;
     bool hasDiff = false;
-    bool visible = true;
+    bool enabled = true;
+    string text = "";
 
     void Initialize() {
 	    font = nvg::LoadFont("Oswald-Regular.ttf");
@@ -23,11 +25,17 @@ namespace GUI {
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
 
+        // showTime is the time when the ui element was shown
+        visible = Time::Now < showTime + 3000;
+        string text = Text::Format("%.0f", difference);
+        if(difference < 1 && difference > -1)
+            text = '0';
+
 #if DEPENDENCY_DID
         if (!hasDiff) {
             DIDTextDiff = "";
         }
-        if (showTime + 3000 <= Time::Now) {
+        if (!visible) {
             DIDTextTotal = "";
             DIDTextDiff = "";
         } else {
@@ -50,8 +58,8 @@ namespace GUI {
             return;
 
         if(font == 0) return;
+        if(!enabled) return;
         if(!visible) return;
-        if(showTime + 3000 <= Time::Now) return;
 
         float h = float(Draw::GetHeight());
         float w = float(Draw::GetWidth());
@@ -135,9 +143,6 @@ namespace GUI {
             nvg::Fill();
             nvg::ClosePath();
             // Draw text
-            string text = Text::Format("%.0f", difference);
-            if(difference < 1 && difference > -1)
-                text = '0';
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
             if(textShadow) {
                 nvg::FillColor(shadowColour);
