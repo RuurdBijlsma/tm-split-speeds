@@ -66,7 +66,7 @@ class MapSpeeds {
         if(state is null) return;
 #if MP4
         cpSpeed = state.FrontSpeed * 3.6;
-#elif TMNEXT
+#else
         cpSpeed = state.WorldVel.Length() * 3.6;
 #endif
         currentSpeeds.cps.InsertLast(cpSpeed);
@@ -85,7 +85,9 @@ class MapSpeeds {
     void Finish() {
         warn("FINISH");
         auto app = cast<CTrackMania@>(GetApp());
-        if(currentSpeeds is null || app.Network is null || app.Network.PlaygroundClientScriptAPI is null) return;
+        if(currentSpeeds is null || app.Network is null || app.Network.PlaygroundClientScriptAPI is null) {
+            return;
+        }
         lastRaceTime = app.Network.PlaygroundClientScriptAPI.GameTime - startDrivingTime;
         // in offline it can take a few ticks for the pb ghost to update
         if(UseGhosts()) {
@@ -127,7 +129,7 @@ class MapSpeeds {
                 pbTime = lastRaceTime;
             }
         } else {
-            auto updatedPB = GetMapPB();
+            auto updatedPB = GetMapPB();       
             if(updatedPB < pb) {
                 newPb = true;
                 pbTime = updatedPB;
@@ -145,7 +147,12 @@ class MapSpeeds {
     }
 
     int GetMapPB() {
-#if MP4
+#if TMNEXT
+        auto ghost = GetPBGhost();
+        return ghost is null || ghost.Result is null ? maxInt : ghost.Result.Time;
+#elif TURBO
+        return GetGhostTime();
+#else
         // print("Getting map pb");
         auto app = cast<CTrackMania>(GetApp());
         CGameCtnPlayground@ playground = cast<CGameCtnPlayground@>(app.CurrentPlayground);
@@ -154,9 +161,6 @@ class MapSpeeds {
             time = playground.PlayerRecordedGhost.RaceTime;
         }
         return time;
-#elif TMNEXT
-        auto ghost = GetPBGhost();
-        return ghost is null || ghost.Result is null ? maxInt : ghost.Result.Time;
 #endif
     }
 
@@ -179,6 +183,40 @@ class MapSpeeds {
             }
         }
         return bestGhost;
+    }
+#endif
+#if TURBO
+    int GetRecordTime() {
+        auto playgroundScript = GetApp().PlaygroundScript;
+        if(playgroundScript is null || playgroundScript.DataMgr is null) return maxInt;
+        auto ghosts = playgroundScript.DataMgr.Records;
+        auto lastGhost = ghosts[ghosts.Length - 1];
+        if(lastGhost.Medal != CGameHighScore::EMedal::None) {
+            return maxInt;
+        }
+        return lastGhost.Time;
+    }
+    int GetGhostTime() {
+        auto playgroundScript = GetApp().PlaygroundScript;
+        if(playgroundScript is null || playgroundScript.DataMgr is null) {
+            warn("no pgs or datamgr yet");
+            return maxInt;
+        }
+        auto ghosts = playgroundScript.DataMgr.Ghosts;
+        if(ghosts.Length == 0) {
+            warn("No ghosts yet");
+            return maxInt;
+        }
+        auto lastGhost = ghosts[ghosts.Length - 1];
+        print("Last ghost data state: " + lastGhost.DataState);
+        if(lastGhost.Nickname.EndsWith("Medal")) {
+            return maxInt;
+        }
+        auto result = lastGhost.RaceResult.Time;
+        if(result == -1) {
+            return maxInt;
+        }
+        return result;
     }
 #endif
 };
