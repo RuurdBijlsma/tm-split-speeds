@@ -1,4 +1,4 @@
-#if MP4
+#if TURBO
 
 void Main() {
     GUI::Initialize();
@@ -8,8 +8,7 @@ void Render() {
     auto player = GetPlayer();
     GUI::visible = false;
     if(player !is null) {
-        auto scriptPlayer = player.ScriptAPI;
-        if(scriptPlayer !is null && scriptPlayer.RaceState == CTrackManiaPlayer::ERaceState::Running)
+        if(player.RaceState == CTrackManiaPlayer::ERaceState::Running)
             GUI::Render();
     }
 }
@@ -19,6 +18,7 @@ bool retireHandled = false;
 bool finishHandled = false;
 MapSpeeds@ mapSpeeds = null;
 
+int loadedTimer = 0;
 uint lastPrevRaceTime = 3000000000;
 
 
@@ -29,21 +29,26 @@ void Update(float dt) {
     auto playground = cast<CGamePlayground@>(app.CurrentPlayground);
     auto player = GetPlayer();
     if(playground is null 
-        || player is null 
-        || player.ScriptAPI is null) {
+        || player is null) {
         if(mapSpeeds !is null) 
             @mapSpeeds = null;
         return;
     }
-    auto currentMap = app.RootMap.MapInfo.MapUid;
+    auto currentMap = app.Challenge.MapInfo.MapUid;
     if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "") {
-        @mapSpeeds = MapSpeeds(currentMap);
-        mapSpeeds.InitializeFiles();
+        print("waiting some ticks: " + loadedTimer);
+        loadedTimer += 1;
+        // wait 30 ticks after ghosts seem to be loaded in case the pb ghost isnt loaded yet
+        // takes ~20 ticks for to load ghosts for me
+        if(loadedTimer > 50) {
+            loadedTimer = 0;
+            @mapSpeeds = MapSpeeds(currentMap);
+            mapSpeeds.InitializeFiles();
+        }
     }
     if(mapSpeeds is null) return;
     
-    auto scriptPlayer = player.ScriptAPI;
-    auto raceState = scriptPlayer.RaceState;
+    auto raceState = player.RaceState;
     if(!retireHandled && raceState == CTrackManiaPlayer::ERaceState::BeforeStart) {
         retireHandled = true;
         mapSpeeds.Retire();
@@ -53,20 +58,13 @@ void Update(float dt) {
         retireHandled = false;
     }
 
-    // Check for map finish then call mapspeed.finish()
-    auto prevRecord = playground.PrevReplayRecord;
-    if(prevRecord !is null && prevRecord.Ghosts.Length > 0) {
-        auto ghost = prevRecord.Ghosts[0];
-        if(ghost.RaceTime != lastPrevRaceTime){ 
-            lastPrevRaceTime = ghost.RaceTime;
-            if(lastPrevRaceTime < 3000000000) {
-                print("Finish!: " + ghost.RaceTime);
-                mapSpeeds.lastRaceTime = ghost.RaceTime;
-                mapSpeeds.CheckForPB();
-            }
-        }
+    // Player finishes map
+    if(raceState == CTrackManiaPlayer::ERaceState::Finished && !finishHandled) {
+        finishHandled = true;
+        mapSpeeds.Finish();
     }
-
+    if(raceState != CTrackManiaPlayer::ERaceState::Finished && finishHandled)
+        finishHandled = false;
 
     mapSpeeds.Tick();
 }

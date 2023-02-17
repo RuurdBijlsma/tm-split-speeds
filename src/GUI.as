@@ -70,7 +70,7 @@ namespace GUI {
         uint boxHeight = uint(scale * 57);
         uint padding = 7;
         bool online = (GetApp()).PlaygroundScript is null;
-#if TMNEXT
+#if TMNEXT || TURBO
         float anchorXOnline = anchorX;
         float anchorYOnline = anchorY;
 #endif
@@ -108,6 +108,8 @@ namespace GUI {
         }
         // Draw difference
 #if TMNEXT
+        int marginBetween = 0;
+#elif TURBO
         int marginBetween = 0;
 #elif MP4
         int marginBetween = 3;

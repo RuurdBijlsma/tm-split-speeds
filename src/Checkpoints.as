@@ -147,10 +147,8 @@ namespace CP {
 		
 #elif TURBO
 		auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
-		auto playgroundScript = cast<CTrackManiaRaceRules>(GetApp().PlaygroundScript);
 		
 		if(playground is null
-			|| playgroundScript is null
 			|| playground.GameTerminals.Length <= 0
 			|| cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer) is null) {
 			inGame = false;
@@ -166,16 +164,13 @@ namespace CP {
 			return;
 		}
 		
-		/* Turbo doesn't support linked checkpoints, so this is sufficient */
-		maxCP = playgroundScript.MapCheckpointPos.Length;
-		
 		inGame = true;
 		
 		/* Checkpoints gains the time value of each CP as it is passed */
 		if(player.CurLap.Checkpoints.Length != 0 && player.CurLap.Checkpoints.Length != curCP) {
 			Checkpoint();
 		}
-		curCP = scriptPlayer.CurLap.Checkpoints.Length;
+		curCP = player.CurLap.Checkpoints.Length;
 		
 #elif MP4
 		auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
