@@ -36,7 +36,6 @@ void Update(float dt) {
     }
     auto currentMap = app.Challenge.MapInfo.MapUid;
     if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "") {
-        print("waiting some ticks: " + loadedTimer);
         loadedTimer += 1;
         // wait 30 ticks after ghosts seem to be loaded in case the pb ghost isnt loaded yet
         // takes ~20 ticks for to load ghosts for me

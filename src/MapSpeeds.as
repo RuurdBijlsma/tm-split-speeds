@@ -83,7 +83,6 @@ class MapSpeeds {
     }
 
     void Finish() {
-        warn("FINISH");
         auto app = cast<CTrackMania@>(GetApp());
         if(currentSpeeds is null || app.Network is null || app.Network.PlaygroundClientScriptAPI is null) {
             return;
@@ -199,16 +198,13 @@ class MapSpeeds {
     int GetGhostTime() {
         auto playgroundScript = GetApp().PlaygroundScript;
         if(playgroundScript is null || playgroundScript.DataMgr is null) {
-            warn("no pgs or datamgr yet");
             return maxInt;
         }
         auto ghosts = playgroundScript.DataMgr.Ghosts;
         if(ghosts.Length == 0) {
-            warn("No ghosts yet");
             return maxInt;
         }
         auto lastGhost = ghosts[ghosts.Length - 1];
-        print("Last ghost data state: " + lastGhost.DataState);
         if(lastGhost.Nickname.EndsWith("Medal")) {
             return maxInt;
         }
