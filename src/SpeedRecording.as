@@ -1,5 +1,4 @@
 class SpeedRecording {
-    int[]@ ticks = {};
     float[]@ cps = {};
     int time = 0;
     bool isOnline = false;
@@ -16,11 +15,6 @@ class SpeedRecording {
         speeds["cps"] = Json::Array();
         for(uint i = 0; i < cps.Length; i++) {
             speeds["cps"].Add(cps[i]);
-        }
-
-        speeds["ticks"] = Json::Array();
-        for(uint i = 0; i < ticks.Length; i++) {
-            speeds["ticks"].Add(ticks[i]);
         }
 
         Json::ToFile(path, speeds);
