@@ -46,6 +46,9 @@ namespace GUI {
 
         float h = float(Draw::GetHeight());
         float w = float(Draw::GetWidth());
+        // if h or w is 0, game is minimized
+        if(h == 0) return;
+        if(w == 0) return;
         float scaleX, scaleY, offsetX = 0;
         if(w / h > 16. / 9) {
             auto correctedW = (h / 9.) * 16;
