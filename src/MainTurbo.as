@@ -39,7 +39,7 @@ void Update(float dt) {
         loadedTimer += 1;
         // wait 30 ticks after ghosts seem to be loaded in case the pb ghost isnt loaded yet
         // takes ~20 ticks for to load ghosts for me
-        if(loadedTimer > 50) {
+        if(loadedTimer > 100) {
             loadedTimer = 0;
             @mapSpeeds = MapSpeeds(currentMap);
             mapSpeeds.InitializeFiles();

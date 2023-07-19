@@ -17,7 +17,7 @@ void Render() {
 
 bool retireHandled = false;
 bool finishHandled = false;
-MapSpeeds@ mapSpeeds = null;
+MapSpeedsMP4@ mapSpeeds = null;
 
 uint lastPrevRaceTime = 3000000000;
 
@@ -36,14 +36,15 @@ void Update(float dt) {
         return;
     }
     auto currentMap = app.RootMap.MapInfo.MapUid;
-    if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "") {
-        @mapSpeeds = MapSpeeds(currentMap);
+    auto scriptPlayer = player.ScriptAPI;
+    auto raceState = scriptPlayer.RaceState;
+    if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "" && raceState == CTrackManiaPlayer::ERaceState::Running) {
+        @mapSpeeds = MapSpeedsMP4(currentMap);
         mapSpeeds.InitializeFiles();
+        retireHandled = true;
     }
     if(mapSpeeds is null) return;
     
-    auto scriptPlayer = player.ScriptAPI;
-    auto raceState = scriptPlayer.RaceState;
     if(!retireHandled && raceState == CTrackManiaPlayer::ERaceState::BeforeStart) {
         retireHandled = true;
         mapSpeeds.Retire();
@@ -61,8 +62,7 @@ void Update(float dt) {
             lastPrevRaceTime = ghost.RaceTime;
             if(lastPrevRaceTime < 3000000000) {
                 print("Finish!: " + ghost.RaceTime);
-                mapSpeeds.lastRaceTime = ghost.RaceTime;
-                mapSpeeds.CheckForPB();
+                mapSpeeds.HandleFinish(ghost.RaceTime);
             }
         }
     }
