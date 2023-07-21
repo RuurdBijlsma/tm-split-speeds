@@ -1,4 +1,4 @@
-[Setting name="Synchronize split speeds with session PB" category="General" description="Delete stored speed splits when the session time splits are also gone. With this disabled the speed splits are stored permanently."]
+[Setting name="Synchronize split speeds with PB" category="General" description="Delete stored speed splits when they do not match your PB time. With this disabled the speed splits are stored permanently."]
 bool keepSync = true;
 
 [Setting name="Compare to Session Best (not PB)" category="General" description="Compare your speed splits to the best splits from the current session instead of PB speed splits. Resets when a new map loads."]

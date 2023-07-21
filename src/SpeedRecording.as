@@ -22,7 +22,6 @@ class SpeedRecording {
 
     void DrawDebugInfo() {
         string[] cpsStr = {};
-        if (cps is null) @cps = {};
         for (uint i = 0; i < cps.Length; i++) {
             cpsStr.InsertLast(tostring(cps[i]));
         }
