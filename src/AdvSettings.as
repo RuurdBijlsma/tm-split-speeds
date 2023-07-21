@@ -12,6 +12,28 @@ namespace AdvSettings{
             mapSpeeds.ClearPB();
             UI::ShowNotification("Cleared pb speeds for all maps", 5000);
         }
+
+        UI::Separator();
+
+        if (mapSpeeds is null) {
+            UI::TextWrapped("No map speeds loaded.");
+            return;
+        }
+
+        UI::TextWrapped("Map UID: " + mapSpeeds.mapId);
+        DrawSpeedRecDebug("currentSpeeds", mapSpeeds.currentSpeeds);
+        DrawSpeedRecDebug("sessionBest", mapSpeeds.sessionBest);
+        DrawSpeedRecDebug("bestSpeeds", mapSpeeds.bestSpeeds);
+    }
+
+    void DrawSpeedRecDebug(const string &in name, SpeedRecording@ sr) {
+        UI::Text(name + ": ");
+        UI::SameLine();
+        if (sr !is null) {
+            sr.DrawDebugInfo();
+        } else {
+            UI::Text("null");
+        }
     }
 
     void DeleteFiles(){
