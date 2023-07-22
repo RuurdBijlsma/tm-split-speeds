@@ -7,6 +7,7 @@ This plugin has a few tweakable settings:
 * Whether to show only the difference in speed, the current speed, or both.
 * Toggle to show when in game GUI is hidden or not.
 * Change size or position using settings.
+* Toggle to compare to session pb or actual pb
 
 ## Source code
 The source code of this plugin is [on GitHub](https://github.com/RuurdBijlsma/tm-split-speeds).
