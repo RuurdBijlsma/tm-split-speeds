@@ -1,8 +1,11 @@
 class MapSpeeds {
     string mapId;
     string jsonFile;
-    SpeedRecording@ bestSpeeds = null;
     SpeedRecording@ currentSpeeds = null;
+    // PB speeds
+    SpeedRecording@ bestSpeeds = null;
+    // Best speeds since map load
+    SpeedRecording@ sessionBest = SpeedRecording();
 
     float cpSpeed = 0;
     int startDrivingTime = 0;
@@ -67,10 +70,13 @@ class MapSpeeds {
         cpSpeed = state.WorldVel.Length() * 3.6;
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
-        if(bestSpeeds !is null && bestSpeeds.cps.Length >= currentSpeeds.cps.Length) {
+
+        auto compareTo = useSessionBestNotPB ? sessionBest : bestSpeeds;
+
+        if(compareTo !is null && compareTo.cps.Length >= currentSpeeds.cps.Length) {
             // speed diff is available
             int lastIndex = currentSpeeds.cps.Length - 1;
-            GUI::difference = currentSpeeds.cps[lastIndex] - bestSpeeds.cps[lastIndex];
+            GUI::difference = currentSpeeds.cps[lastIndex] - compareTo.cps[lastIndex];
             GUI::hasDiff = true;
         } else {
             GUI::hasDiff = false;
@@ -84,6 +90,7 @@ class MapSpeeds {
             return;
         }
         lastRaceTime = app.Network.PlaygroundClientScriptAPI.GameTime - startDrivingTime;
+        UpdateSBSplits();
         // in offline it can take a few ticks for the pb ghost to update
         if(UseGhosts()) {
             checkingForPB = 100;
@@ -100,6 +107,14 @@ class MapSpeeds {
     }
 
     // ------------- METHODS --------------
+
+    void UpdateSBSplits() {
+        if (sessionBest.time <= 0 || lastRaceTime < sessionBest.time) {
+            // new session best
+            @sessionBest = currentSpeeds;
+            sessionBest.time = lastRaceTime;
+        }
+    }
 
     bool UseGhosts() {
         // only use ghosts in single player and not editor, if keepsync is false also dont use ghosts, because otherwise we can't get proper last race time
@@ -124,7 +139,7 @@ class MapSpeeds {
                 pbTime = lastRaceTime;
             }
         } else {
-            auto updatedPB = GetMapPB();       
+            auto updatedPB = GetMapPB();
             if(updatedPB < pb) {
                 newPb = true;
                 pbTime = updatedPB;

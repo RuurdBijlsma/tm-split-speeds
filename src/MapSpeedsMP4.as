@@ -2,8 +2,11 @@
 class MapSpeedsMP4 {
     string mapId;
     string jsonFile;
-    SpeedRecording@ bestSpeeds = null;
     SpeedRecording@ currentSpeeds = null;
+    // PB speeds
+    SpeedRecording@ bestSpeeds = null;
+    // Best speeds since map load
+    SpeedRecording@ sessionBest = SpeedRecording();
 
     float cpSpeed = 0;
     int startDrivingTime = 0;
@@ -71,10 +74,13 @@ class MapSpeedsMP4 {
         cpSpeed = state.FrontSpeed * 3.6;
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
-        if(bestSpeeds !is null && bestSpeeds.cps.Length >= currentSpeeds.cps.Length) {
+
+        auto compareTo = useSessionBestNotPB ? sessionBest : bestSpeeds;
+
+        if(compareTo !is null && compareTo.cps.Length >= currentSpeeds.cps.Length) {
             // speed diff is available
             int lastIndex = currentSpeeds.cps.Length - 1;
-            GUI::difference = currentSpeeds.cps[lastIndex] - bestSpeeds.cps[lastIndex];
+            GUI::difference = currentSpeeds.cps[lastIndex] - compareTo.cps[lastIndex];
             GUI::hasDiff = true;
         } else {
             GUI::hasDiff = false;
@@ -109,7 +115,10 @@ class MapSpeedsMP4 {
     void HandleFinish(int finishTime) {
         bool newPb = false;
         int pb = keepSync ? GetMapPB() : (bestSpeeds is null ? maxInt : bestSpeeds.time);
-        
+
+        lastRaceTime = finishTime;
+        UpdateSBSplits();
+
         if(finishTime <= pb) {
             newPb = true;
             pbTime = finishTime;
@@ -123,6 +132,14 @@ class MapSpeedsMP4 {
                 bestSpeeds.time = pbTime;
                 bestSpeeds.ToFile(jsonFile, pbTime, !UseGhosts());
             }
+        }
+    }
+
+    void UpdateSBSplits() {
+        if (sessionBest.time <= 0 || lastRaceTime < sessionBest.time) {
+            // new session best
+            @sessionBest = currentSpeeds;
+            sessionBest.time = lastRaceTime;
         }
     }
 
