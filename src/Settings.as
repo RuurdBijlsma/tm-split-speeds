@@ -28,6 +28,9 @@ vec4 textColour = vec4(1, 1, 1, 1);
 
 #if MP4
 
+[Setting name="Use world speed instead of front speed" category="General" description="World speed takes into account your sideways speed, it is more accurate when drifting or sliding sideways"]
+bool useWorldSpeed = true;
+
 [Setting name="UI Scale" min=0.1 max=2 category="UI"]
 float scale = 1.15;
 

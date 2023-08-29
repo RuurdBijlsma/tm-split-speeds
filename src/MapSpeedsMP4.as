@@ -71,7 +71,11 @@ class MapSpeedsMP4 {
         if(currentSpeeds is null) return;
         auto state = VehicleState::ViewingPlayerState();
         if(state is null) return;
-        cpSpeed = state.FrontSpeed * 3.6;
+        if(useWorldSpeed) {
+            cpSpeed = state.WorldVel.Length() * 3.6;
+        } else {
+            cpSpeed = state.FrontSpeed * 3.6;
+        }
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
 
