@@ -59,6 +59,7 @@ namespace CP {
 			inGame = false;
 			return;
 		}
+		// print("ECHO 1");
 		
 		auto player = cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer);
 		if(player is null) {
@@ -66,17 +67,20 @@ namespace CP {
 			return;
 		}
 		auto scriptPlayer = player.ScriptAPI;
+		// print("ECHO 2");
 		
 		if(scriptPlayer is null) {
 			inGame = false;
 			return;
 		}
+		// print("ECHO 3");
 		
 		if(player.CurrentLaunchedRespawnLandmarkIndex == uint(-1)) {
 			// sadly, can't see CPs of spectated players any more
 			inGame = false;
 			return;
 		}
+		// print("ECHO 4");
 		
 		MwFastBuffer<CGameScriptMapLandmark@> landmarks = playground.Arena.MapLandmarks;
 		
@@ -112,6 +116,7 @@ namespace CP {
 				}
 			}
 		}
+		// print("ECHO 5");
 		inGame = true;
 		
 		/* These are all always length zero, and so are useless:
@@ -139,8 +144,10 @@ namespace CP {
                 Checkpoint();
 			}
 
+			// print("ECHO 6");
             if(waypoint !is null && waypoint.IsFinish) {
                 // for split speeds purposes, count finish / multilap as checkpoint
+				// print("ECHO 7 - CHECKPOINT");
                 Checkpoint();
             }
 		}

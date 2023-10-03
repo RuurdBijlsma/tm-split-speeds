@@ -21,13 +21,8 @@ class MapSpeeds {
     }
 
     void InitializeFiles() {
-        string baseFolder = IO::FromDataFolder('');
-        string folder = baseFolder + 'splitspeeds\\';
-        jsonFile = folder + mapId + '.json';
-        if(!IO::FolderExists(folder)) {
-            IO::CreateFolder(folder);
-            print("Created folder: " + folder);
-        }
+        auto jsonFile = IO::FromStorageFolder(mapId + '.json');
+
         if(IO::FileExists(jsonFile)) {
             @bestSpeeds = SpeedRecording::FromFile(jsonFile);
             if(bestSpeeds is null) {

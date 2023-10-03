@@ -2,6 +2,25 @@
 
 void Main() {
     GUI::Initialize();
+
+    string baseFolder = IO::FromDataFolder('');
+    string oldStorage = baseFolder + 'splitspeeds\\';
+    if(IO::FolderExists(oldStorage)) {
+        print("Migrating files to new storage location: " + IO::FromStorageFolder(''));
+
+        auto files = IO::IndexFolder(oldStorage, false);
+        for(uint i = 0; i < files.Length; i++) {
+            auto file = files[i];
+            auto baseFileParts = file.Split("/");
+            auto baseFilename = baseFileParts[baseFileParts.Length - 1];
+
+            print("Moving " + file + " to " + IO::FromStorageFolder(baseFilename));
+            IO::Move(file, IO::FromStorageFolder(baseFilename));
+        }
+
+        print("Deleting old storage folder");
+        IO::DeleteFolder(oldStorage);
+    }
 }
 
 void Render() {
