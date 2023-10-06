@@ -21,7 +21,7 @@ class MapSpeeds {
     }
 
     void InitializeFiles() {
-        auto jsonFile = IO::FromStorageFolder(mapId + '.json');
+        jsonFile = IO::FromStorageFolder(mapId + '.json');
 
         if(IO::FileExists(jsonFile)) {
             @bestSpeeds = SpeedRecording::FromFile(jsonFile);
