@@ -1,8 +1,13 @@
 [Setting name="Synchronize split speeds with PB" category="General" description="Delete stored speed splits when they do not match your PB time. With this disabled the speed splits are stored permanently."]
 bool keepSync = true;
 
-[Setting name="Compare to Session Best (not PB)" category="General" description="Compare your speed splits to the best splits from the current session instead of PB speed splits. Resets when a new map loads."]
-bool useSessionBestNotPB = false;
+enum CompareType {
+    PersonalBest,
+    SessionBest,
+}
+
+[Setting name="What speed should be compared" category="General" description="Show comparison to your personal best or your session best. Session best resets when a new map loads."]
+CompareType compareType = CompareType::PersonalBest;
 
 [Setting name="Show current speed at cp" category="UI"]
 bool showCurrentSpeed = true;

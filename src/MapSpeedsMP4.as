@@ -22,13 +22,7 @@ class MapSpeedsMP4 {
     }
 
     void InitializeFiles() {
-        string baseFolder = IO::FromDataFolder('');
-        string folder = baseFolder + 'splitspeeds\\';
-        jsonFile = folder + mapId + '.json';
-        if(!IO::FolderExists(folder)) {
-            IO::CreateFolder(folder);
-            print("Created folder: " + folder);
-        }
+        auto jsonFile = IO::FromStorageFolder(mapId + '.json');
         if(IO::FileExists(jsonFile)) {
             @bestSpeeds = SpeedRecording::FromFile(jsonFile);
             if(bestSpeeds is null) {
@@ -79,7 +73,12 @@ class MapSpeedsMP4 {
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
 
-        auto compareTo = useSessionBestNotPB ? sessionBest : bestSpeeds;
+        SpeedRecording@ compareTo;
+        if(compareType == CompareType::PersonalBest) {
+            @compareTo = bestSpeeds;
+        } else if(compareType == CompareType::SessionBest) {
+            @compareTo = sessionBest;
+        }
 
         if(compareTo !is null && compareTo.cps.Length >= currentSpeeds.cps.Length) {
             // speed diff is available

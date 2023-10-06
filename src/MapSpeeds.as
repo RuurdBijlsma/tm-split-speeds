@@ -66,7 +66,12 @@ class MapSpeeds {
         currentSpeeds.cps.InsertLast(cpSpeed);
         GUI::currentSpeed = cpSpeed;
 
-        auto compareTo = useSessionBestNotPB ? sessionBest : bestSpeeds;
+        SpeedRecording@ compareTo;
+        if(compareType == CompareType::PersonalBest) {
+            @compareTo = bestSpeeds;
+        } else if(compareType == CompareType::SessionBest) {
+            @compareTo = sessionBest;
+        }
 
         if(compareTo !is null && compareTo.cps.Length >= currentSpeeds.cps.Length) {
             // speed diff is available

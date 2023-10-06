@@ -3,7 +3,6 @@
 void Main() {
     GUI::Initialize();
 
-
     string baseFolder = IO::FromDataFolder('');
     string oldStorage = baseFolder + 'splitspeeds\\';
 
