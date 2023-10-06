@@ -3,8 +3,10 @@
 void Main() {
     GUI::Initialize();
 
+
     string baseFolder = IO::FromDataFolder('');
     string oldStorage = baseFolder + 'splitspeeds\\';
+
     if(IO::FolderExists(oldStorage)) {
         print("Migrating files to new storage location: " + IO::FromStorageFolder(''));
 
@@ -16,6 +18,8 @@ void Main() {
 
             print("Moving " + file + " to " + IO::FromStorageFolder(baseFilename));
             IO::Move(file, IO::FromStorageFolder(baseFilename));
+            if(i % 50 == 0)
+                sleep(10);
         }
 
         print("Deleting old storage folder");
