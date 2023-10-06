@@ -105,8 +105,11 @@ class MapSpeedsMP4 {
         // only use ghosts in single player and not editor, if keepsync is false also dont use ghosts, because otherwise we can't get proper last race time
         if(!keepSync) return false;
         auto app = cast<CTrackMania@>(GetApp());
-        bool ghost = app.PlaygroundScript !is null && app.Editor is null;
-        return ghost;
+        if(app.PlaygroundScript is null) return false;
+        CGameCtnPlayground@ playground = cast<CGameCtnPlayground@>(app.CurrentPlayground);
+        if(playground is null) return false;
+        if(playground.PlayerRecordedGhost is null) return false;
+        return true;
     }
 
     void ClearPB() {
@@ -116,18 +119,13 @@ class MapSpeedsMP4 {
     }
 
     void HandleFinish(int finishTime) {
-        bool newPb = false;
-        int pb = keepSync ? GetMapPB() : (bestSpeeds is null ? maxInt : bestSpeeds.time);
+        int pb = UseGhosts() ? GetMapPB() : (bestSpeeds is null ? maxInt : bestSpeeds.time);
 
         lastRaceTime = finishTime;
         UpdateSBSplits();
 
         if(finishTime <= pb) {
-            newPb = true;
             pbTime = finishTime;
-        }
-
-        if(newPb) {
             checkingForPB = 0;
             print("NEW PB!: " + pbTime);
             if(currentSpeeds !is null) {
