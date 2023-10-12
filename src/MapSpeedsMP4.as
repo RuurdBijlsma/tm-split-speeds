@@ -119,6 +119,7 @@ class MapSpeedsMP4 {
     }
 
     void HandleFinish(int finishTime) {
+        Checkpoint();
         int pb = UseGhosts() ? GetMapPB() : (bestSpeeds is null ? maxInt : bestSpeeds.time);
 
         lastRaceTime = finishTime;

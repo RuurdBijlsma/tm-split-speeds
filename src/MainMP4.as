@@ -1,30 +1,5 @@
+
 #if MP4
-
-void Main() {
-    GUI::Initialize();
-
-    string baseFolder = IO::FromDataFolder('');
-    string oldStorage = baseFolder + 'splitspeeds\\';
-
-    if(IO::FolderExists(oldStorage)) {
-        print("Migrating files to new storage location: " + IO::FromStorageFolder(''));
-
-        auto files = IO::IndexFolder(oldStorage, false);
-        for(uint i = 0; i < files.Length; i++) {
-            auto file = files[i];
-            auto baseFileParts = file.Split("/");
-            auto baseFilename = baseFileParts[baseFileParts.Length - 1];
-
-            print("Moving " + file + " to " + IO::FromStorageFolder(baseFilename));
-            IO::Move(file, IO::FromStorageFolder(baseFilename));
-            if(i % 50 == 0)
-                sleep(10);
-        }
-
-        print("Deleting old storage folder");
-        IO::DeleteFolder(oldStorage);
-    }
-}
 
 void Render() {
     auto player = GetPlayer();
@@ -84,7 +59,6 @@ void Update(float dt) {
             lastPrevRaceTime = ghost.RaceTime;
             if(lastPrevRaceTime < 3000000000) {
                 print("Finish!: " + ghost.RaceTime);
-                mapSpeeds.Checkpoint();
                 mapSpeeds.HandleFinish(ghost.RaceTime);
             }
         }

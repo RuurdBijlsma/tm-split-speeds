@@ -85,6 +85,7 @@ class MapSpeeds {
     }
 
     void Finish() {
+        Checkpoint();
         auto app = cast<CTrackMania@>(GetApp());
         if(currentSpeeds is null || app.Network is null || app.Network.PlaygroundClientScriptAPI is null) {
             return;

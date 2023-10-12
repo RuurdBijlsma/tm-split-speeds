@@ -1,5 +1,3 @@
-#if TMNEXT
-
 void Main() {
     GUI::Initialize();
 
@@ -25,6 +23,8 @@ void Main() {
         IO::DeleteFolder(oldStorage);
     }
 }
+
+#if TMNEXT
 
 void Render() {
     auto player = GetPlayer();

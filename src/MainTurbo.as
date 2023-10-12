@@ -1,9 +1,5 @@
 #if TURBO
 
-void Main() {
-    GUI::Initialize();
-}
-
 void Render() {
     auto player = GetPlayer();
     GUI::visible = false;
