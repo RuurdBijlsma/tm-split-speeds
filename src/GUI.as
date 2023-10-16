@@ -35,8 +35,8 @@ namespace GUI {
             diffText = '0';
         speedText = Text::Format(showSpeedDecimal ? "%.1f" : "%.0f", currentSpeed);
         currentColour = sameSpeedColour;
-        if(difference > 1) currentColour = fasterColour;
-        else if(difference < -1) currentColour = slowerColour;
+        if(difference > (showSplitDecimal ? 0.1 : 1)) currentColour = fasterColour;
+        else if(difference < (showSplitDecimal ? -0.1 : -1)) currentColour = slowerColour;
     
         if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
             return;
@@ -78,8 +78,11 @@ namespace GUI {
         float anchorXOnline = anchorX;
         float anchorYOnline = anchorY;
 #endif
-        uint x = uint((online ? anchorXOnline : anchorX) * 2560) + (showSpeedDecimal ? 4 : 1);
-        uint y = uint((online ? anchorYOnline : anchorY) * 1440 - boxHeight / 2);
+        uint x = uint(((online && useOnlinePos) ? anchorXOnline : anchorX) * 2560) + (showSpeedDecimal ? 4 : 1);
+#if MP4
+        x -= showSpeedDecimal ? 4 : 1;
+#endif
+        uint y = uint(((online && useOnlinePos) ? anchorYOnline : anchorY) * 1440 - boxHeight / 2);
         nvg::FontFace(font);
 
         int denseAdjustment = 0;
