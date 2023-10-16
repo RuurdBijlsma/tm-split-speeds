@@ -27,12 +27,13 @@ namespace GUI {
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
 
+
         // showTime is the time when the ui element was shown
         visible = Time::Now < showTime + 3000;
-        diffText = Text::Format("%.0f", difference);
-        if(difference < 1 && difference > -1)
+        diffText = Text::Format(showSplitDecimal ? "%.1f" : "%.0f", difference);
+        if(difference < 0.1 && difference > -0.1)
             diffText = '0';
-        speedText = Text::Format("%.0f", currentSpeed);
+        speedText = Text::Format(showSpeedDecimal ? "%.1f" : "%.0f", currentSpeed);
         currentColour = sameSpeedColour;
         if(difference > 1) currentColour = fasterColour;
         else if(difference < -1) currentColour = slowerColour;
@@ -68,8 +69,8 @@ namespace GUI {
     }
 
     void RenderDefaultUI() {
-        uint box1Width = uint(scale * 67);
-        uint box2Width = uint(scale * 78);
+        uint box1Width = uint(scale * (showSpeedDecimal ? 70 : 67));
+        uint box2Width = uint(scale * (showSpeedDecimal ? 74 : 77));
         uint boxHeight = uint(scale * 57);
         uint padding = 7;
         bool online = (GetApp()).PlaygroundScript is null;
@@ -77,23 +78,28 @@ namespace GUI {
         float anchorXOnline = anchorX;
         float anchorYOnline = anchorY;
 #endif
-        uint x = uint((online ? anchorXOnline : anchorX) * 2560);
+        uint x = uint((online ? anchorXOnline : anchorX) * 2560) + (showSpeedDecimal ? 4 : 1);
         uint y = uint((online ? anchorYOnline : anchorY) * 1440 - boxHeight / 2);
-        uint textOffsetY = 0;
         nvg::FontFace(font);
 
+        int denseAdjustment = 0;
+        uint textOffsetY = 3;
         if(denseUI) {
             boxHeight = uint(scale * 40);
-            nvg::FontSize(scale * fontSize - 5);
             textOffsetY = 3;
             y += 17;
-        } else {
-            nvg::FontSize(scale * fontSize);
-            textOffsetY = 3;
+            denseAdjustment = -5;
         }
 
         // Draw current speed
         if(showCurrentSpeed) {
+            auto charSurplus = Math::Max(0, speedText.Length - 3);
+            nvg::FontSize(scale * (fontSize + denseAdjustment - charSurplus * 2.75));
+            auto padding1 = padding - charSurplus * 1.5;
+            if(denseUI) {
+                padding1 += 6;
+            }
+
             // Draw box
             nvg::BeginPath();
             nvg::Rect(x - box1Width, y, box1Width, boxHeight);
@@ -101,13 +107,15 @@ namespace GUI {
             nvg::Fill();
             nvg::ClosePath();
             // Draw text
-            nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
+            nvg::TextAlign(nvg::Align::Left | nvg::Align::Middle);
+
+
             if(textShadow){
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(x - box1Width + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box1Width, speedText);
+                nvg::TextBox(x + padding1 - box1Width + shadowX, y + boxHeight / 2 + shadowY + textOffsetY, box1Width, speedText);
             }
             nvg::FillColor(textColour);
-            nvg::TextBox(x - box1Width - padding, y + boxHeight / 2 + textOffsetY, box1Width, speedText);
+            nvg::TextBox(x + padding1 - box1Width, y + boxHeight / 2 + textOffsetY, box1Width, speedText);
         }
         // Draw difference
 #if TMNEXT
@@ -118,6 +126,13 @@ namespace GUI {
         int marginBetween = 3;
 #endif
         if(showSpeedDiff && hasDiff) {
+            auto charSurplus = Math::Max(0, diffText.Length - 4);
+            nvg::FontSize(scale * (fontSize + denseAdjustment - charSurplus * 2.75));
+            padding -= int(charSurplus * 2.5);
+            if(denseUI) {
+                padding += 6;
+            }
+
             // Draw box
             nvg::BeginPath();
             nvg::Rect(marginBetween + x, y, box2Width, boxHeight);
@@ -126,9 +141,10 @@ namespace GUI {
             nvg::ClosePath();
             // Draw text
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
+
             if(textShadow) {
                 nvg::FillColor(shadowColour);
-                nvg::TextBox(marginBetween + x + shadowX - padding, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, diffText);
+                nvg::TextBox(marginBetween + x - padding + shadowX, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, diffText);
             }
             nvg::FillColor(textColour);
             nvg::TextBox(marginBetween + x - padding, y + boxHeight / 2 + textOffsetY, box2Width, diffText);

@@ -30,6 +30,12 @@ bool nativeColours = false;
 [Setting color name="Text colour" category="UI"]
 vec4 textColour = vec4(1, 1, 1, 1);
 
+[Setting name="Show decimal in current speed" category="UI"]
+bool showSpeedDecimal = false;
+
+[Setting name="Show decimal in speed difference" category="UI"]
+bool showSplitDecimal = false;
+
 
 #if MP4
 
