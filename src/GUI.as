@@ -27,11 +27,10 @@ namespace GUI {
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
 
-
         // showTime is the time when the ui element was shown
         visible = Time::Now < showTime + 3000;
         diffText = Text::Format(showSplitDecimal ? "%.1f" : "%.0f", difference);
-        if(difference < 0.1 && difference > -0.1)
+        if(difference < (showSplitDecimal ? 0.1 : 1) && difference > (showSplitDecimal ? -0.1 : -1))
             diffText = '0';
         speedText = Text::Format(showSpeedDecimal ? "%.1f" : "%.0f", currentSpeed);
         currentColour = sameSpeedColour;
@@ -77,6 +76,7 @@ namespace GUI {
 #if TMNEXT || TURBO
         float anchorXOnline = anchorX;
         float anchorYOnline = anchorY;
+        bool useOnlinePos = false;
 #endif
         uint x = uint(((online && useOnlinePos) ? anchorXOnline : anchorX) * 2560) + (showSpeedDecimal ? 4 : 1);
 #if MP4
