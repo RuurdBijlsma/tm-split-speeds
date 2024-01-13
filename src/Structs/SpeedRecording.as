@@ -1,9 +1,10 @@
 class SpeedRecording {
+
     float[]@ cps = {};
-    int time = 0;
+    uint time = 0;
     bool isOnline = false;
 
-    void ToFile(const string &in path, int time, bool isOnline) {
+    void ToFile(const string &in path) {
         print("ToFile! time: " + time + ", " + path);
         Json::Value speeds = Json::Object();
 
@@ -20,16 +21,18 @@ class SpeedRecording {
         Json::ToFile(path, speeds);
     }
 
-    void DrawDebugInfo() {
+    string ToString() {
         string[] cpsStr = {};
         for (uint i = 0; i < cps.Length; i++) {
             cpsStr.InsertLast(tostring(cps[i]));
         }
-        UI::TextWrapped("SpeedRecording < time = " + Time::Format(time) + ", cps = { " + (string::Join(cpsStr, " / ")) + " } >");
+        return "SpeedRecording < time = " + Time::Format(time) + ", cps = { " + (string::Join(cpsStr, " / ")) + " } >";
     }
-};
+
+}
 
 namespace SpeedRecording {
+
     SpeedRecording@ FromFile(const string &in path) {
         if(!IO::FileExists(path)) return null;
         auto json = Json::FromFile(path);
@@ -79,4 +82,5 @@ namespace SpeedRecording {
         print("V1: Loaded splits from file, online: " + result.isOnline + ", time: " + result.time + ", cp count: " + result.cps.Length);
         return result;
     }
+
 }
