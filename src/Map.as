@@ -1,30 +1,10 @@
 namespace Map {
-	// PB ghost has trigram |
-
     string mapId = "";
     SpeedRecording@ pbRecord = null;
     SpeedRecording@ sessionRecord = null;
     SpeedRecording@ currentRecord = null;
 
     uint CurrentPB = 0;
-
-    uint GetGhostPB() {
-        uint pb = 0;
-        auto playgroundScript = cast<CSmArenaRulesMode@>(GetApp().PlaygroundScript);
-        if(playgroundScript !is null) {
-            auto ghosts = playgroundScript.DataFileMgr.Ghosts;
-            CGameGhostScript@ ghost = null;
-            for(uint i = 0; i < ghosts.Length; i++) {
-                if (ghosts[i].Trigram == "|") {
-                    @ghost = ghosts[i];
-                    break;
-                }
-            }
-            if (ghost !is null) 
-                pb = ghost.Result.Time;
-        }
-        return pb;
-    }
 
     uint GetMapPB() {
         uint pb = 0;
@@ -38,7 +18,7 @@ namespace Map {
         } else {
             @pbRecord = null;
             // Otherwise try from pb ghost
-            pb = GetGhostPB();
+            pb = Ghost::GetPB();
         }
         return pb;
     }

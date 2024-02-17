@@ -7,24 +7,6 @@ namespace Race {
 	bool retireHandled = false;
 	int timeCheckTicks = -1;
 	uint lastRaceTime = 0;
-
-	// Get exact last run time from a ghost 👻
-	// Only works in solo
-	uint GetOfflineRaceTime(CSmArenaRulesMode@ playgroundScript) {
-		uint result = 0;
-		string playerName = GetApp().LocalPlayerInfo.Name;
-		auto ghosts = playgroundScript.DataFileMgr.Ghosts;
-		CGameGhostScript@ ghost = null;
-		for(int i = ghosts.Length - 1; i >= 0; i--) {
-			if (ghosts[i].Nickname == playerName) {
-				@ghost = ghosts[i];
-				break;
-			}
-		}
-		if (ghost !is null) 
-			result = ghost.Result.Time;
-		return result;
-	}
 	
 	// Get time since start of run, not as accurate as ghost time
 	uint GetRunningTime() {
@@ -44,6 +26,9 @@ namespace Race {
 	void Update() {
 		auto playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
 		if(playground is null) return;
+
+#if TMNEXT
+
 		auto sequence = playground.GameTerminals[0].UISequence_Current;
 		auto playgroundScript = cast<CSmArenaRulesMode@>(GetApp().PlaygroundScript);
 
@@ -82,8 +67,9 @@ namespace Race {
 			timeCheckTicks = -1;
 			bool online = true;
 			if(playgroundScript !is null) {
+				// Solo
 				online = false;
-				lastRaceTime = GetOfflineRaceTime(playgroundScript);
+				lastRaceTime = Ghost::GetLastRunTime();
 			}
 			print("FINAL FINISH TIME: " + lastRaceTime + ", ONLINE = " + online);
 			Map::HandleFinish(lastRaceTime, online);
@@ -92,6 +78,20 @@ namespace Race {
 		// Make sure finish code triggers only once per finish
 		if (sequence != CGamePlaygroundUIConfig::EUISequence::Finish)
 			finishHandled = false;
+
+#elif MP4
+
+		print("MP4 Update race");
+		auto scriptPlayer = player.ScriptAPI;
+		auto raceState = scriptPlayer.RaceState;
+		if((mapSpeeds is null || currentMap != mapSpeeds.mapId) && currentMap != "" && raceState == CTrackManiaPlayer::ERaceState::Running) {
+			@mapSpeeds = MapSpeedsMP4(currentMap);
+			mapSpeeds.InitializeFiles();
+			retireHandled = true;
+		}
+
+#endif
+
 	}
 
 }
