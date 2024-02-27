@@ -29,6 +29,14 @@ class SpeedRecording {
         return "SpeedRecording < time = " + Time::Format(time) + ", cps = { " + (string::Join(cpsStr, " / ")) + " } >";
     }
 
+    void DrawDebugInfo() {
+        string[] cpsStr = {};
+        for (uint i = 0; i < cps.Length; i++) {
+            cpsStr.InsertLast(tostring(cps[i]));
+        }
+        UI::TextWrapped("SpeedRecording < time = " + Time::Format(time) + ", cps = { " + (string::Join(cpsStr, " / ")) + " } >");
+    }
+
 }
 
 namespace SpeedRecording {

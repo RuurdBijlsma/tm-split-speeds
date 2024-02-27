@@ -6,14 +6,17 @@ namespace Map {
 
     uint CurrentPB = 0;
 
+    string get_FilePath() {
+        return IO::FromStorageFolder(mapId + ".json");
+    }
+
     uint GetMapPB() {
         uint pb = 0;
+        print("FILEPATH: " + FilePath);
 
-        auto filePath = IO::FromStorageFolder(mapId + ".json");
-
-        if(IO::FileExists(filePath)) {
+        if(IO::FileExists(FilePath)) {
             // First try get PB from speedsplit file:
-            @pbRecord = SpeedRecording::FromFile(filePath);
+            @pbRecord = SpeedRecording::FromFile(FilePath);
             pb = pbRecord.time;
         } else {
             @pbRecord = null;
@@ -50,16 +53,21 @@ namespace Map {
         if(state is null) return;
         auto speed = true ? state.WorldVel.Length() : state.FrontSpeed;
         speed *= 3.6;
+        GUI::currentSpeed = speed;
         float compareSpeed = -1;
         if(pbRecord !is null && pbRecord.cps.Length > currentRecord.cps.Length) {
             compareSpeed = pbRecord.cps[currentRecord.cps.Length];
         }
         currentRecord.cps.InsertLast(speed);
         if(compareSpeed == -1) {
+            GUI::hasDiff = false;
             print("No pb speed, current speed = " + speed);
         } else {
+            GUI::hasDiff = true;
+            GUI::difference = speed - compareSpeed;
             print("speed = " + speed + ", diff = " + (speed - compareSpeed));
         }
+        GUI::showTime = Time::Now;
     }
 
     void HandleFinish(uint time, bool isOnline) {
@@ -67,12 +75,18 @@ namespace Map {
         currentRecord.isOnline = isOnline;
         print("Map handle finish: " + time + ", online = " + isOnline);
 
-        // if(time <= CurrentPB) {
+        if(time <= CurrentPB || CurrentPB == 0) {
             CurrentPB = time;
-            auto filePath = IO::FromStorageFolder(mapId + ".json");
-            currentRecord.ToFile(filePath);
+            currentRecord.ToFile(FilePath);
             @pbRecord = currentRecord;
-        // }
+        }
+    }
+
+    void ClearPB() {
+        print("Deleting pb: " + FilePath);
+        IO::Delete(FilePath);
+        @pbRecord = null;
+        @sessionRecord = null;
     }
 
 }
