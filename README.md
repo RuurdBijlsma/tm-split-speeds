@@ -13,5 +13,5 @@ This plugin has a few tweakable settings:
 The source code of this plugin is [on GitHub](https://github.com/RuurdBijlsma/tm-split-speeds).
 
 ## Limitations
-* You have to have driven a PB while having this plugin installed for it to register. PB speeds per map are stored in the Openplanet user folder.
+* You have to have driven a time while having this plugin installed for it to register. PB speeds per map are stored in the Openplanet user folder.
 * The speeds can vary by at most ~.5 km/h, this isn't a big issue since the speeds are rounded to the nearest integer anyways. It's possible to see a speed difference of 1 km/h on pf maps because of this.

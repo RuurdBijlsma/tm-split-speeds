@@ -79,9 +79,10 @@ namespace Map {
     void HandleFinish(uint time, bool isOnline) {
         currentRecord.time = time;
         currentRecord.isOnline = isOnline;
-        print("Map handle finish: " + time + ", online = " + isOnline);
+        auto isPB = time <= currentPB || currentPB == 0;
+        print("Map handle finish: " + time + ", online = " + isOnline + ", is PB = " + isPB);
 
-        if(time <= currentPB || currentPB == 0) {
+        if(isPB) {
             currentPB = time;
             currentRecord.ToFile(FilePath);
             @pbRecord = currentRecord;

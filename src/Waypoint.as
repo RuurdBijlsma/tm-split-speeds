@@ -22,13 +22,13 @@ namespace Waypoint {
 			_preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
 			auto landmark = landmarks[_preCPIdx];
 			if (landmark.Waypoint is null) {
-				print("START BLOCK TMNEXT");
+				// print("START BLOCK TMNEXT");
 			} else if (landmark.Waypoint.IsFinish || landmark.Waypoint.IsMultiLap) {
 				Map::HandleCheckpoint();
-				print("FINISH or MULTILAP BLOCK TMNEXT");
+				// print("FINISH or MULTILAP BLOCK TMNEXT");
 			} else {
 				Map::HandleCheckpoint();
-				print("CHECKPOINT TMNEXT");
+				// print("CHECKPOINT TMNEXT");
 			}
 		}
 		

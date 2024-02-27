@@ -14,6 +14,7 @@ namespace AdvSettings{
         UI::Separator();
 
         if (Map::pbRecord is null || Map::mapId == "") {
+            UI::TextWrapped("MAP: " + Map::mapId);
             UI::TextWrapped("No map speeds loaded.");
             return;
         }
