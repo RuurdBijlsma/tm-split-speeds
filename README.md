@@ -9,6 +9,9 @@ This plugin has a few tweakable settings:
 * Change size or position using settings.
 * Toggle to compare to session pb or actual pb
 
+## Bug reports
+Bug reports are most welcome [on GitHub](https://github.com/RuurdBijlsma/tm-split-speeds/issues). Contributions via pull requests are also welcome.
+
 ## Source code
 The source code of this plugin is [on GitHub](https://github.com/RuurdBijlsma/tm-split-speeds).
 
