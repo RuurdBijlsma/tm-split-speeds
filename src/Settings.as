@@ -1,10 +1,10 @@
-// enum CompareType {
-//     PersonalBest,
-//     SessionBest,
-// }
+enum CompareType {
+    PersonalBest,
+    SessionBest,
+}
 
-// [Setting name="What speed should be compared" category="General" description="Show comparison to your personal best or your session best. Session best resets when a new map loads."]
-// CompareType compareType = CompareType::PersonalBest;
+[Setting name="What speed should be compared" category="General" description="Show comparison to your personal best or your session best. Session best resets when a new map loads."]
+CompareType compareType = CompareType::PersonalBest;
 
 [Setting name="Show current speed at cp" category="UI"]
 bool showCurrentSpeed = true;

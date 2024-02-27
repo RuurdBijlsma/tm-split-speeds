@@ -48,7 +48,6 @@ namespace Race {
 		// Detect run finish:
 		if (sequence == CGamePlaygroundUIConfig::EUISequence::Finish && !finishHandled) {
 			finishHandled = true;
-			print("FINISH!");
 			
 			if (playgroundScript !is null)
 				// Solo
@@ -58,7 +57,7 @@ namespace Race {
 				timeCheckTicks = 0;
 			// If last ghost isn't loaded, or player is online, use running time instead of ghosts
 			lastRaceTime = GetRunningTime();
-			print("ESTIMATED FINISH TIME: " + lastRaceTime);
+			// print("ESTIMATED FINISH TIME: " + lastRaceTime);
 		}
 
 		if(timeCheckTicks > 0) timeCheckTicks--;
@@ -71,7 +70,7 @@ namespace Race {
 				online = false;
 				lastRaceTime = Ghost::GetLastRunTime();
 			}
-			print("FINAL FINISH TIME: " + lastRaceTime + ", ONLINE = " + online);
+			// print("FINAL FINISH TIME: " + lastRaceTime + ", ONLINE = " + online);
 			Map::HandleFinish(lastRaceTime, online);
 		}
 

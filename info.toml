@@ -1,5 +1,5 @@
 [meta]
-name = "Split Speeds 2"
+name = "Split Speeds"
 author = "RuteNL"
 category = "Overlay"
 siteid = 145
@@ -8,4 +8,4 @@ version = "2.0.0"
 
 [script]
 dependencies = ["VehicleState"]
-exports = [ "src/Exports/SplitSpeeds2Exports.as" ]
+exports = [ "src/Exports/SplitSpeedsExports.as" ]

@@ -6,7 +6,6 @@
 
 
 void Main() {
-    print("MAIN YEP");
     GUI::Main();
     Map::Main();
 }

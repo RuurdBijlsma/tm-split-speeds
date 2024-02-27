@@ -4,7 +4,8 @@ namespace Map {
     SpeedRecording@ sessionRecord = null;
     SpeedRecording@ currentRecord = null;
 
-    uint CurrentPB = 0;
+    uint sessionPB = 0;
+    uint currentPB = 0;
 
     string get_FilePath() {
         return IO::FromStorageFolder(mapId + ".json");
@@ -12,7 +13,6 @@ namespace Map {
 
     uint GetMapPB() {
         uint pb = 0;
-        print("FILEPATH: " + FilePath);
 
         if(IO::FileExists(FilePath)) {
             // First try get PB from speedsplit file:
@@ -39,12 +39,13 @@ namespace Map {
         // Map switch
         mapId = currentMapId;
 
-        CurrentPB = GetMapPB();
-        print("Map switched to " + mapId + ", pb = " + CurrentPB);
+        @sessionRecord = null;
+        currentPB = GetMapPB();
+        sessionPB = 0;
+        print("Map switched to " + mapId + ", pb = " + currentPB);
     }
 
     void HandleRunStart() {
-        print("Run starts now");
         @currentRecord = SpeedRecording();
     }
 
@@ -54,18 +55,23 @@ namespace Map {
         auto speed = true ? state.WorldVel.Length() : state.FrontSpeed;
         speed *= 3.6;
         GUI::currentSpeed = speed;
+
         float compareSpeed = -1;
-        if(pbRecord !is null && pbRecord.cps.Length > currentRecord.cps.Length) {
-            compareSpeed = pbRecord.cps[currentRecord.cps.Length];
+        if(compareType == CompareType::PersonalBest) {
+            if(pbRecord !is null && pbRecord.cps.Length > currentRecord.cps.Length) {
+                compareSpeed = pbRecord.cps[currentRecord.cps.Length];
+            }
+        } else if(compareType == CompareType::SessionBest) {
+            if(sessionRecord !is null && sessionRecord.cps.Length > currentRecord.cps.Length) {
+                compareSpeed = sessionRecord.cps[currentRecord.cps.Length];
+            }
         }
         currentRecord.cps.InsertLast(speed);
         if(compareSpeed == -1) {
             GUI::hasDiff = false;
-            print("No pb speed, current speed = " + speed);
         } else {
             GUI::hasDiff = true;
             GUI::difference = speed - compareSpeed;
-            print("speed = " + speed + ", diff = " + (speed - compareSpeed));
         }
         GUI::showTime = Time::Now;
     }
@@ -75,10 +81,14 @@ namespace Map {
         currentRecord.isOnline = isOnline;
         print("Map handle finish: " + time + ", online = " + isOnline);
 
-        if(time <= CurrentPB || CurrentPB == 0) {
-            CurrentPB = time;
+        if(time <= currentPB || currentPB == 0) {
+            currentPB = time;
             currentRecord.ToFile(FilePath);
             @pbRecord = currentRecord;
+        }
+        if(time <= sessionPB || sessionPB == 0) {
+            sessionPB = time;
+            @sessionRecord = currentRecord;
         }
     }
 
