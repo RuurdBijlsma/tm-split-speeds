@@ -22,7 +22,9 @@ namespace GUI {
     }
 
     void Render() {
-        if(nativeColours){
+        if(Detector::DetectInMenu()) return;
+        print("NOT IN MENU");
+        if(nativeColours) {
             fasterColour = vec4(0, .123, .822, .75);
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }

@@ -12,6 +12,17 @@ namespace Detector {
         _inGame = DetectInGame();
     }
 
+    bool DetectInMenu() {
+#if TMNEXT
+        auto playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
+        return playground is null or playground.Map is null;
+#elif MP4
+        return GetApp().RootMap is null;
+#elif TURBO
+        return false;
+#endif
+    }
+
     bool DetectInGame() {
 #if TMNEXT
 

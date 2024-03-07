@@ -46,12 +46,27 @@ namespace Ghost {
         return 0;
     }
 
+    int maxInt = 2147483647;
     uint GetPB() {
-        uint pb = 0;
-
-        print("Hello mp4");
-        
-        return pb;
+        // print("Getting map pb");
+        auto app = cast<CTrackMania>(GetApp());
+        CGameCtnPlayground@ playground = cast<CGameCtnPlayground@>(app.CurrentPlayground);
+        int time = maxInt;
+        if (playground.PlayerRecordedGhost !is null){
+            time = playground.PlayerRecordedGhost.RaceTime;
+        }
+        // print("JFDJFJDFJDFJDFJ");
+        if(app.PlaygroundScript !is null){
+            auto ghosts = app.PlaygroundScript.DataFileMgr.Ghosts;
+            for(uint i = 0; i < ghosts.Length; i++){
+                auto ghost = ghosts[i];
+                if(ghost.Result.Time < time){
+                    time = ghost.Result.Time;
+                }
+            }
+            print("LOWEST TIME FROM SCRIPT: " + tostring(time));
+        }
+        return time;
     }
 
 #endif

@@ -52,8 +52,10 @@ namespace Map {
     void HandleCheckpoint() {
         auto state = VehicleState::ViewingPlayerState();
         if(state is null) return;
-        auto speed = true ? state.WorldVel.Length() : state.FrontSpeed;
+        auto speed = useWorldSpeed ? state.WorldVel.Length() : state.FrontSpeed;
         speed *= 3.6;
+        // print("WORLD SPEED = " + state.WorldVel.Length());
+        // print("FRONT SPEED = " + state.FrontSpeed);
         GUI::currentSpeed = speed;
 
         float compareSpeed = -1;
@@ -80,7 +82,7 @@ namespace Map {
         currentRecord.time = time;
         currentRecord.isOnline = isOnline;
         auto isPB = time <= currentPB || currentPB == 0;
-        print("Map handle finish: " + time + ", online = " + isOnline + ", is PB = " + isPB);
+        // print("Map handle finish: " + time + ", online = " + isOnline + ", is PB = " + isPB);
 
         if(isPB) {
             currentPB = time;
