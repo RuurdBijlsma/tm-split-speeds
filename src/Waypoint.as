@@ -28,7 +28,6 @@ namespace Waypoint {
 				// print("FINISH or MULTILAP BLOCK TMNEXT");
 			} else {
 				Map::HandleCheckpoint();
-				print("CHECKPOINT TMNEXT");
 			}
 		}
 		
@@ -37,7 +36,6 @@ namespace Waypoint {
 		/* Detect checkpoints */
 		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
 		if(player.CurLap.Checkpoints.Length != _curCP) {
-			print("CHECKPOINT TURBO");
 			Map::HandleCheckpoint();
 		}
 		_curCP = player.CurLap.Checkpoints.Length;
@@ -48,7 +46,6 @@ namespace Waypoint {
 		auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
 		auto scriptPlayer = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer).ScriptAPI;
 		if(scriptPlayer.CurLap.Checkpoints.Length != _curCP && scriptPlayer.CurLap.Checkpoints.Length > 0) {
-			print("CHECKPOINT MP4");
 			Map::HandleCheckpoint();
 		}
 		_curCP = scriptPlayer.CurLap.Checkpoints.Length;

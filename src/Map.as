@@ -30,8 +30,21 @@ namespace Map {
         Map::HandleRunStart();
     }
 
+    float lastSpeed = 0;
     void Update() {
         if(!Detector::InGame) return;
+
+#if TMNEXT
+
+        // Remember last speed to apply fix when it breaks in snow car switch
+        auto state = VehicleState::ViewingPlayerState();
+        if(state is null) return;
+        auto speed = useWorldSpeed ? state.WorldVel.Length() : state.FrontSpeed;
+        speed *= 3.6;
+        if(speed != 0)
+            lastSpeed = speed;
+
+#endif
 
         auto currentMapId = GetApp().RootMap.MapInfo.MapUid;
         if(mapId == currentMapId) return;
@@ -54,6 +67,10 @@ namespace Map {
         if(state is null) return;
         auto speed = useWorldSpeed ? state.WorldVel.Length() : state.FrontSpeed;
         speed *= 3.6;
+        if(speed == 0) {
+            print("Zero speed detected at CP, fixing using last known speed: " + lastSpeed);
+            speed = lastSpeed;
+        }
         // print("WORLD SPEED = " + state.WorldVel.Length());
         // print("FRONT SPEED = " + state.FrontSpeed);
         GUI::currentSpeed = speed;
