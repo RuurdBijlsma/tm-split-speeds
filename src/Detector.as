@@ -32,7 +32,10 @@ namespace Detector {
             || playground.Arena is null
             || playground.Map is null
             || playground.GameTerminals.Length <= 0
-            || playground.GameTerminals[0].UISequence_Current != CGamePlaygroundUIConfig::EUISequence::Playing
+            || (
+                playground.GameTerminals[0].UISequence_Current != CGamePlaygroundUIConfig::EUISequence::Playing
+                && playground.GameTerminals[0].UISequence_Current != CGamePlaygroundUIConfig::EUISequence::Finish
+            )
             || cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer) is null) {
             return false;
         }
