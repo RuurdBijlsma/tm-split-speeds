@@ -84,6 +84,12 @@ namespace Map {
             if(sessionRecord !is null && sessionRecord.cps.Length > currentRecord.cps.Length) {
                 compareSpeed = sessionRecord.cps[currentRecord.cps.Length];
             }
+        } else if(compareType == CompareType::PBFallbackSession) {
+            if(pbRecord !is null && pbRecord.cps.Length > currentRecord.cps.Length) {
+                compareSpeed = pbRecord.cps[currentRecord.cps.Length];
+            } else if(sessionRecord !is null && sessionRecord.cps.Length > currentRecord.cps.Length) {
+                compareSpeed = sessionRecord.cps[currentRecord.cps.Length];
+            }
         }
         currentRecord.cps.InsertLast(speed);
         if(compareSpeed == -1) {

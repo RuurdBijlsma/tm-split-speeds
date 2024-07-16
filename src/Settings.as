@@ -1,6 +1,7 @@
 enum CompareType {
     PersonalBest,
     SessionBest,
+    PBFallbackSession,
 }
 
 [Setting name="What speed should be compared" category="General" description="Show comparison to your personal best or your session best. Session best resets when a new map loads."]
