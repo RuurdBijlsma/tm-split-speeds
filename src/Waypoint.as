@@ -4,9 +4,11 @@
  */
 
 namespace Waypoint {
+#if TMNEXT
+	uint _preCPIdx = 0;
+#endif
 	uint _curLap = 0;
 	uint _curCP = 0;
-	uint _preCPIdx = 0;
 	
 	uint get_curCP() property { return _curCP; }
 	
@@ -16,10 +18,15 @@ namespace Waypoint {
 #if TMNEXT
 		auto playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
 		auto player = cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer);
-		
-		// Detect waypoints
 		MwFastBuffer<CGameScriptMapLandmark@> landmarks = playground.Arena.MapLandmarks;
-		if(_preCPIdx != player.CurrentLaunchedRespawnLandmarkIndex && landmarks.Length > player.CurrentLaunchedRespawnLandmarkIndex) {
+
+		if(player.CurrentLaunchedRespawnLandmarkIndex >= landmarks.Length) {
+			print("Impossible! Players landmark-index is greater than count of Landmarks. Skipping...");
+			return;
+		}
+
+		// Detect waypoints
+		if(_preCPIdx != player.CurrentLaunchedRespawnLandmarkIndex) {
 			_preCPIdx = player.CurrentLaunchedRespawnLandmarkIndex;
 			auto landmark = landmarks[_preCPIdx];
 			if (landmark.Waypoint is null) {
