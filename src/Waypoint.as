@@ -4,6 +4,7 @@
  */
 
 namespace Waypoint {
+	uint _curLap = 0;
 	uint _curCP = 0;
 	uint _preCPIdx = 0;
 	
@@ -44,11 +45,16 @@ namespace Waypoint {
 
 		/* Detect checkpoints */
 		auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
-		auto scriptPlayer = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer).ScriptAPI;
-		if(scriptPlayer.CurLap.Checkpoints.Length != _curCP && scriptPlayer.CurLap.Checkpoints.Length > 0) {
+		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer);
+		uint currentLap = player.CurrentNbLaps;
+		uint currentCP = player.ScriptAPI.CurLap.Checkpoints.Length;
+
+		if(currentLap > _curLap || currentCP > _curCP) {
 			Map::HandleCheckpoint();
 		}
-		_curCP = scriptPlayer.CurLap.Checkpoints.Length;
+
+		_curLap = currentLap;
+		_curCP = currentCP;
 
 #endif
 

@@ -91,6 +91,7 @@ namespace Map {
                 compareSpeed = sessionRecord.cps[currentRecord.cps.Length];
             }
         }
+
         currentRecord.cps.InsertLast(speed);
         if(compareSpeed == -1) {
             GUI::hasDiff = false;
@@ -99,6 +100,12 @@ namespace Map {
             GUI::difference = speed - compareSpeed;
         }
         GUI::showTime = Time::Now;
+
+        // auto cps = "" + currentRecord.cps[0];
+        // for(uint i = 1; i < currentRecord.cps.Length; i++){
+        //     cps = cps + ", " + currentRecord.cps[i];
+        // }
+        // print("cps: " + cps);
     }
 
     void HandleFinish(uint time, bool isOnline) {
