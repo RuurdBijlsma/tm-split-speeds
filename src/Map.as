@@ -14,12 +14,11 @@ namespace Map {
     uint GetMapPB() {
         uint pb = 0;
 
-        if(IO::FileExists(FilePath)) {
+        @pbRecord = SpeedRecording::FromFile(FilePath);
+        if(pbRecord !is null) {
             // First try get PB from speedsplit file:
-            @pbRecord = SpeedRecording::FromFile(FilePath);
             pb = pbRecord.time;
         } else {
-            @pbRecord = null;
             // Otherwise try from pb ghost
             pb = Ghost::GetPB();
         }
