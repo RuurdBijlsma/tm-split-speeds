@@ -36,10 +36,15 @@ namespace Waypoint {
 
 		/* Detect checkpoints */
 		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
-		if(player.CurLap.Checkpoints.Length != _curCP) {
+		auto currentLap = player.CurrentNbLaps;
+		auto currentCP = player.CurLap.Checkpoints.Length;
+
+		if(currentLap > _curLap || currentCP > _curCP) {
 			Map::HandleCheckpoint();
 		}
-		_curCP = player.CurLap.Checkpoints.Length;
+
+		_curLap = currentLap;
+		_curCP = currentCP;
 		
 #elif MP4
 
