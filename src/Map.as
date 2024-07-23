@@ -3,6 +3,7 @@ namespace Map {
     SpeedRecording@ pbRecord = null;
     SpeedRecording@ sessionRecord = null;
     SpeedRecording@ currentRecord = null;
+    SpeedRecording@ unfinishedRun = null;
 
     uint sessionPB = 0;
     uint currentPB = 0;
@@ -55,6 +56,7 @@ namespace Map {
         // Map switch
         mapId = currentMapId;
 
+        @unfinishedRun = null;
         @sessionRecord = null;
         currentPB = GetMapPB();
         sessionPB = 0;
@@ -62,6 +64,14 @@ namespace Map {
     }
 
     void HandleRunStart() {
+        if(currentRecord !is null
+            && currentRecord.cps.Length > 0
+            && pbRecord is null
+            && sessionRecord is null
+            && (unfinishedRun is null || unfinishedRun.cps.Length < currentRecord.cps.Length)) {
+            // print("saving unfinished run with lenght=" + currentRecord.cps.Length);
+            @unfinishedRun = @currentRecord;
+        }
         @currentRecord = SpeedRecording();
     }
 
@@ -77,25 +87,28 @@ namespace Map {
         // print("WORLD SPEED = " + state.WorldVel.Length());
         // print("FRONT SPEED = " + state.FrontSpeed);
         GUI::currentSpeed = speed;
+        currentRecord.cps.InsertLast(speed);
 
         float compareSpeed = -1;
-        if(compareType == CompareType::PersonalBest) {
-            if(pbRecord !is null && pbRecord.cps.Length > currentRecord.cps.Length) {
-                compareSpeed = pbRecord.cps[currentRecord.cps.Length];
-            }
-        } else if(compareType == CompareType::SessionBest) {
-            if(sessionRecord !is null && sessionRecord.cps.Length > currentRecord.cps.Length) {
-                compareSpeed = sessionRecord.cps[currentRecord.cps.Length];
-            }
-        } else if(compareType == CompareType::PBFallbackSession) {
-            if(pbRecord !is null && pbRecord.cps.Length > currentRecord.cps.Length) {
-                compareSpeed = pbRecord.cps[currentRecord.cps.Length];
-            } else if(sessionRecord !is null && sessionRecord.cps.Length > currentRecord.cps.Length) {
-                compareSpeed = sessionRecord.cps[currentRecord.cps.Length];
-            }
+        if(pbRecord !is null
+            && pbRecord.cps.Length >= currentRecord.cps.Length
+            && (compareType == CompareType::PersonalBest
+                || compareType == CompareType::PBFallbackSession)) {
+            print("using pb record");
+            compareSpeed = pbRecord.cps[currentRecord.cps.Length - 1];
+        } else if(sessionRecord !is null
+            && sessionRecord.cps.Length >= currentRecord.cps.Length
+            && (compareType == CompareType::SessionBest
+                || compareType == CompareType::PBFallbackSession)) {
+            print("using session record");
+            compareSpeed = sessionRecord.cps[currentRecord.cps.Length - 1];
+        } else if(useUnfinishedRuns
+            && unfinishedRun !is null
+            && unfinishedRun.cps.Length >= currentRecord.cps.Length) {
+            print("using unfinished run");
+            compareSpeed = unfinishedRun.cps[currentRecord.cps.Length - 1];
         }
 
-        currentRecord.cps.InsertLast(speed);
         if(compareSpeed == -1) {
             GUI::hasDiff = false;
         } else {
@@ -134,6 +147,7 @@ namespace Map {
         IO::Delete(FilePath);
         @pbRecord = null;
         @sessionRecord = null;
+        @unfinishedRun = null;
     }
 
 }
