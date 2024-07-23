@@ -56,8 +56,7 @@ namespace SpeedRecording {
 #elif TURBO
         auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
         auto playgroundScript = cast<CTrackManiaRaceRules>(GetApp().PlaygroundScript);
-        print(playgroundScript.MapNbLaps);
-        if(version < 2 && playgroundScript.MapNbLaps > 1) { // ?? Needs >1 or >0 ??
+        if(version < 2 && playgroundScript.MapNbLaps > 1) {
             print("Old splits version on MultiLap map found! Deleting splits for this map.");
             IO::Delete(path);
             return null;

@@ -58,8 +58,8 @@ namespace Ghost {
             auto records = app.PlaygroundScript.DataMgr.Records;
             // See https://github.com/Phlarx/tm-ultimate-medals/blob/76bf469aa3979c90b78a4ecb87c3a7423b635647/UltimateMedals.as#L581
             for(uint i = 0; i < records.Length; i++) {
-                print("i=" + i + ", GhostName: " + records[i].GhostName + ", Time: " + records[i].Time);
                 // TODO: identify game mode, and then load arcade or dual-driver best instead? only loads for campaign maps right now
+                // print("i=" + i + ", GhostName: " + records[i].GhostName + ", Time: " + records[i].Time);
                 // if(records[i].GhostName == "Duo_BestGhost") {
                 if(records[i].GhostName == "Solo_BestGhost") {
                         time = records[i].Time;
