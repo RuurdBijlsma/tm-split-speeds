@@ -18,7 +18,7 @@ namespace Race {
 		auto playgroundScript = cast<CSmArenaRulesMode@>(GetApp().PlaygroundScript);
 
 		if (playgroundScript is null)
-			// Online 
+			// Online
 			return GetApp().Network.PlaygroundClientScriptAPI.GameTime - scriptPlayer.StartTime;
 		else
 			// Solo
@@ -81,6 +81,39 @@ namespace Race {
 		if (sequence != CGamePlaygroundUIConfig::EUISequence::Finish)
 			finishHandled = false;
 
+#elif TURBO
+		// Check for run start
+
+		auto playground = cast<CGamePlayground@>(GetApp().CurrentPlayground);
+		if(playground is null) return;
+		auto terminal = playground.GameTerminals[0];
+		if(terminal is null) return;
+		auto player = cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
+
+		auto raceState = player.RaceState;
+		if(raceState == CTrackManiaPlayer::ERaceState::Running && !retireHandled) {
+			print("Start!");
+			Map::HandleRunStart();
+			retireHandled = true;
+		} else if(retireHandled && raceState != CTrackManiaPlayer::ERaceState::Running) {
+			retireHandled = false;
+		}
+
+		// Check for run finish
+
+		auto prevRecord = playground.PrevReplayRecord;
+		if(prevRecord !is null && prevRecord.Ghosts.Length > 0) {
+			auto ghost = prevRecord.Ghosts[0];
+			if(player.RaceState == CTrackManiaPlayer::ERaceState::Finished
+				&& lastPrevRaceTime != player.Score.LastRaceTime) {
+				print("Finish!: " + player.Score.LastRaceTime);
+				lastPrevRaceTime = player.Score.LastRaceTime;
+				if(lastPrevRaceTime < 3000000000) {
+					Map::HandleFinish(lastPrevRaceTime, false);
+				}
+			}
+		}
+
 #elif MP4
 		// Check for run start
 
@@ -102,11 +135,11 @@ namespace Race {
 		}
 
 		// Check for run finish
-		
+
 		auto prevRecord = playground.PrevReplayRecord;
 		if(prevRecord !is null && prevRecord.Ghosts.Length > 0) {
 			auto ghost = prevRecord.Ghosts[0];
-			if(ghost.RaceTime != lastPrevRaceTime){ 
+			if(ghost.RaceTime != lastPrevRaceTime){
 				lastPrevRaceTime = ghost.RaceTime;
 				if(lastPrevRaceTime < 3000000000) {
 					print("Finish!: " + ghost.RaceTime);

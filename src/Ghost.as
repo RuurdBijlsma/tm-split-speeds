@@ -40,9 +40,42 @@ namespace Ghost {
         return pb;
     }
 
+#elif TURBO
+
+    uint GetLastRunTime() {
+        return 0;
+    }
+
+    int maxInt = 2147483647;
+    uint GetPB() {
+        // print("Getting map pb");
+        auto app = cast<CTrackMania>(GetApp());
+        auto playground = cast<CGameCtnPlayground@>(app.CurrentPlayground);
+        auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
+        int time = maxInt;
+
+        if(app.PlaygroundScript !is null){
+            auto records = app.PlaygroundScript.DataMgr.Records;
+            // See https://github.com/Phlarx/tm-ultimate-medals/blob/76bf469aa3979c90b78a4ecb87c3a7423b635647/UltimateMedals.as#L581
+            for(uint i = 0; i < records.Length; i++) {
+                print("i=" + i + ", GhostName: " + records[i].GhostName + ", Time: " + records[i].Time);
+                // TODO: identify game mode, and then load arcade or dual-driver best instead? only loads for campaign maps right now
+                // if(records[i].GhostName == "Duo_BestGhost") {
+                if(records[i].GhostName == "Solo_BestGhost") {
+                        time = records[i].Time;
+                        break;
+                }
+                // this shouldn't loop more than a few times, since each entry is a different record type
+            }
+        }
+
+        print("LOWEST TIME FROM SCRIPT: " + tostring(time));
+        return time;
+    }
+
 #elif MP4
 
-	uint GetLastRunTime() {
+    uint GetLastRunTime() {
         return 0;
     }
 

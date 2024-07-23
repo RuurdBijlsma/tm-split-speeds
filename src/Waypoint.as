@@ -42,6 +42,7 @@ namespace Waypoint {
 #elif TURBO
 
 		/* Detect checkpoints */
+		auto playground = GetApp().CurrentPlayground;
 		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
 		auto currentLap = player.CurrentNbLaps;
 		auto currentCP = player.CurLap.Checkpoints.Length;

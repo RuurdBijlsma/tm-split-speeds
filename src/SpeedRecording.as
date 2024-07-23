@@ -53,6 +53,15 @@ namespace SpeedRecording {
             IO::Delete(path);
             return null;
         }
+#elif TURBO
+        auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
+        auto playgroundScript = cast<CTrackManiaRaceRules>(GetApp().PlaygroundScript);
+        print(playgroundScript.MapNbLaps);
+        if(version < 2 && playgroundScript.MapNbLaps > 1) { // ?? Needs >1 or >0 ??
+            print("Old splits version on MultiLap map found! Deleting splits for this map.");
+            IO::Delete(path);
+            return null;
+        }
 #endif
 
         if(version == 0) {
