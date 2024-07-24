@@ -63,15 +63,46 @@ namespace Map {
         print("Map switched to " + mapId + ", pb = " + currentPB);
     }
 
+
+    void _UpdateUnfinishedRun() {
+        if(currentRecord is null) return;
+        if(currentRecord.cps.Length == 0) return;
+        if(pbRecord !is null) return;
+        if(sessionRecord !is null) return;
+        if(unfinishedRun !is null && unfinishedRun.cps.Length > currentRecord.cps.Length) return;
+        if(unfinishedRun !is null
+            && unfinishedRun.cps.Length == currentRecord.cps.Length
+            && unfinishedRun.lastCpTime < currentRecord.lastCpTime)
+            return;
+
+        // print("saving unfinished run with lenght=" + currentRecord.cps.Length);
+        @unfinishedRun = @currentRecord;
+    }
+
+    uint _GetRaceTime() {
+        uint now = GetApp().Network.PlaygroundClientScriptAPI.GameTime;
+        uint raceStart = 0;
+
+        auto terminal = GetApp().CurrentPlayground.GameTerminals[0];
+#if TMNEXT
+        auto smPlayer = cast<CSmPlayer>(terminal.GUIPlayer);
+        auto smScriptPlayer = cast<CSmScriptPlayer>(smPlayer.ScriptAPI);
+        raceStart = smScriptPlayer.StartTime;
+#elif MP4
+        auto scriptPlayer = cast<CTrackManiaPlayer>(terminal.GUIPlayer).ScriptAPI;
+        raceStart = scriptPlayer.RaceStartTime;
+#elif TURBO
+        auto player = cast<CTrackManiaPlayer>(terminal.ControlledPlayer);
+        raceStart = player.RaceStartTime;
+#endif
+
+        // print("racetime: " + (now - raceStart));
+        return now - raceStart;
+    }
+
+
     void HandleRunStart() {
-        if(currentRecord !is null
-            && currentRecord.cps.Length > 0
-            && pbRecord is null
-            && sessionRecord is null
-            && (unfinishedRun is null || unfinishedRun.cps.Length < currentRecord.cps.Length)) {
-            // print("saving unfinished run with lenght=" + currentRecord.cps.Length);
-            @unfinishedRun = @currentRecord;
-        }
+        _UpdateUnfinishedRun();
         @currentRecord = SpeedRecording();
     }
 
@@ -88,24 +119,25 @@ namespace Map {
         // print("FRONT SPEED = " + state.FrontSpeed);
         GUI::currentSpeed = speed;
         currentRecord.cps.InsertLast(speed);
+        currentRecord.lastCpTime = _GetRaceTime();
 
         float compareSpeed = -1;
         if(pbRecord !is null
             && pbRecord.cps.Length >= currentRecord.cps.Length
             && (compareType == CompareType::PersonalBest
                 || compareType == CompareType::PBFallbackSession)) {
-            print("using pb record");
+            // print("using pb record");
             compareSpeed = pbRecord.cps[currentRecord.cps.Length - 1];
         } else if(sessionRecord !is null
             && sessionRecord.cps.Length >= currentRecord.cps.Length
             && (compareType == CompareType::SessionBest
                 || compareType == CompareType::PBFallbackSession)) {
-            print("using session record");
+            // print("using session record");
             compareSpeed = sessionRecord.cps[currentRecord.cps.Length - 1];
         } else if(useUnfinishedRuns
             && unfinishedRun !is null
             && unfinishedRun.cps.Length >= currentRecord.cps.Length) {
-            print("using unfinished run");
+            // print("using unfinished run");
             compareSpeed = unfinishedRun.cps[currentRecord.cps.Length - 1];
         }
 
