@@ -61,6 +61,7 @@ namespace Map {
         @sessionRecord = null;
         currentPB = GetMapPB();
         sessionPB = 0;
+        HandleRunStart();
         print("Map switched to " + mapId + ", pb = " + currentPB);
     }
 
