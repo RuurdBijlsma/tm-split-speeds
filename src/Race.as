@@ -86,6 +86,7 @@ namespace Race {
 
 		auto playground = cast<CGamePlayground@>(GetApp().CurrentPlayground);
 		if(playground is null) return;
+		if(playground.GameTerminals.Length == 0) return;
 		auto terminal = playground.GameTerminals[0];
 		if(terminal is null) return;
 		auto player = cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
@@ -120,6 +121,7 @@ namespace Race {
 		auto app = cast<CTrackMania@>(GetApp());
 		auto playground = cast<CGamePlayground@>(app.CurrentPlayground);
 		if(playground is null) return;
+		if(playground.GameTerminals.Length == 0) return;
 		auto terminal = playground.GameTerminals[0];
 		if(terminal is null) return;
 		auto player = cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
