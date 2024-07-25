@@ -56,6 +56,7 @@ namespace Map {
         // Map switch
         mapId = currentMapId;
 
+        @currentRecord = null;
         @unfinishedRun = null;
         @sessionRecord = null;
         currentPB = GetMapPB();
@@ -79,8 +80,7 @@ namespace Map {
         @unfinishedRun = @currentRecord;
     }
 
-    uint _GetRaceTime() {
-        uint now = GetApp().Network.PlaygroundClientScriptAPI.GameTime;
+    uint _GetRaceStart() {
         uint raceStart = 0;
 
         auto terminal = GetApp().CurrentPlayground.GameTerminals[0];
@@ -95,11 +95,24 @@ namespace Map {
         auto player = cast<CTrackManiaPlayer>(terminal.ControlledPlayer);
         raceStart = player.RaceStartTime;
 #endif
+        return raceStart;
+    }
+
+    uint _GetNow() {
+        return GetApp().Network.PlaygroundClientScriptAPI.GameTime;
+    }
+
+    uint _GetRaceTime() {
+        uint raceStart = _GetRaceStart();
+        uint now = _GetNow();
 
         // print("racetime: " + (now - raceStart));
         return now - raceStart;
     }
 
+    bool _IsBeforeRaceStart() {
+        return _GetNow() < _GetRaceTime();
+    }
 
     void HandleRunStart() {
         _UpdateUnfinishedRun();
@@ -107,6 +120,13 @@ namespace Map {
     }
 
     void HandleCheckpoint() {
+#if TMNEXT
+        if(_IsBeforeRaceStart()) {
+            // print("raceStart: " + _GetRaceTime());
+            // print("now: " + _GetNow());
+            return;
+        }
+#endif
         auto state = VehicleState::ViewingPlayerState();
         if(state is null) return;
         auto speed = useWorldSpeed ? state.WorldVel.Length() : state.FrontSpeed;
@@ -167,10 +187,12 @@ namespace Map {
             currentPB = time;
             currentRecord.ToFile(FilePath);
             @pbRecord = currentRecord;
+            @unfinishedRun = null;
         }
         if(time <= sessionPB || sessionPB == 0) {
             sessionPB = time;
             @sessionRecord = currentRecord;
+            @unfinishedRun = null;
         }
     }
 
