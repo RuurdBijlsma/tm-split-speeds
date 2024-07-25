@@ -112,6 +112,7 @@ namespace Map {
     }
 
     void HandleFinish(uint time, bool isOnline) {
+        if(mapId == "") return;
         currentRecord.time = time;
         currentRecord.isOnline = isOnline;
         auto isPB = time <= currentPB || currentPB == 0;
