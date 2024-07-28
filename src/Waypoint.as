@@ -4,6 +4,7 @@
  */
 
 namespace Waypoint {
+	uint _curLap = 0;
 	uint _curCP = 0;
 	uint _preCPIdx = 0;
 	
@@ -35,21 +36,39 @@ namespace Waypoint {
 
 		/* Detect checkpoints */
 		auto playground = GetApp().CurrentPlayground;
+		if(playground.GameTerminals.Length == 0) return;
 		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
-		if(player.CurLap.Checkpoints.Length != _curCP) {
+		uint currentLap = player.CurrentNbLaps;
+		uint currentCP = player.CurLap.Checkpoints.Length;
+
+		// if(currentLap != _curLap || currentCP != _curCP) {
+		// 	print("lap: " + currentLap + ", cp: " + currentCP);
+		// }
+		if(currentLap > _curLap || currentCP > _curCP) {
 			Map::HandleCheckpoint();
 		}
-		_curCP = player.CurLap.Checkpoints.Length;
+
+		_curLap = currentLap;
+		_curCP = currentCP;
 		
 #elif MP4
 
 		/* Detect checkpoints */
 		auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
-		auto scriptPlayer = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer).ScriptAPI;
-		if(scriptPlayer.CurLap.Checkpoints.Length != _curCP && scriptPlayer.CurLap.Checkpoints.Length > 0) {
+		if(playground.GameTerminals.Length == 0) return;
+		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer);
+		uint currentLap = player.CurrentNbLaps;
+		uint currentCP = player.ScriptAPI.CurLap.Checkpoints.Length;
+
+		// if(currentLap != _curLap || currentCP != _curCP) {
+		// 	print("lap: " + currentLap + ", cp: " + currentCP);
+		// }
+		if(currentLap > _curLap || currentCP > _curCP) {
 			Map::HandleCheckpoint();
 		}
-		_curCP = scriptPlayer.CurLap.Checkpoints.Length;
+
+		_curLap = currentLap;
+		_curCP = currentCP;
 
 #endif
 
