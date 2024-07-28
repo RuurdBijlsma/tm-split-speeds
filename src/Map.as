@@ -46,7 +46,11 @@ namespace Map {
 
 #endif
 
+#if TMNEXT || MP4
         auto currentMapId = GetApp().RootMap.MapInfo.MapUid;
+#elif TURBO
+        auto currentMapId = GetApp().Challenge.MapInfo.MapUid;
+#endif
         if(mapId == currentMapId) return;
 
         // Map switch
