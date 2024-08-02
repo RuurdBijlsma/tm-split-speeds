@@ -8,8 +8,8 @@ class SpeedRecording {
         print("ToFile! time: " + time + ", " + path);
         Json::Value speeds = Json::Object();
 
-        // version: 1
-        speeds["version"] = 1;
+        // version: 2
+        speeds["version"] = 2;
         speeds["time"] = time;
         speeds["isOnline"] = isOnline;
 
@@ -47,10 +47,29 @@ namespace SpeedRecording {
         if(json.GetType() != Json::Type::Object) return null;
 
         int version = json["version"].GetType() == Json::Type::Number ? json["version"] : 0;
+
+#if MP4
+        if(version < 2 && GetApp().RootMap.TMObjective_NbLaps > 1) {
+            print("Old splits version on MultiLap map found! Deleting splits for this map.");
+            IO::Delete(path);
+            return null;
+        }
+#elif TURBO
+        auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
+        auto playgroundScript = cast<CTrackManiaRaceRules>(GetApp().PlaygroundScript);
+        if(version < 2 && playgroundScript.MapNbLaps > 1) {
+            print("Old splits version on MultiLap map found! Deleting splits for this map.");
+            IO::Delete(path);
+            return null;
+        }
+#endif
+
         if(version == 0) {
             return Version0(json);
         } else if(version == 1) {
             return Version1(json);
+        } else if(version == 2) {
+            return Version2(json);
         } else {
             warn("Unsupported recorded speeds json version: " + path);
         }
@@ -88,6 +107,18 @@ namespace SpeedRecording {
             result.cps.InsertLast(json['cps'][i]);
         }
         print("V1: Loaded splits from file, online: " + result.isOnline + ", time: " + result.time + ", cp count: " + result.cps.Length);
+        return result;
+    }
+
+    SpeedRecording@ Version2(Json::Value json) {
+        auto result = SpeedRecording();
+        result.time = json["time"];
+        result.isOnline = json["isOnline"];
+        if(json['cps'].GetType() != Json::Type::Array) return null;
+        for(uint i = 0; i < json['cps'].Length; i++) {
+            result.cps.InsertLast(json['cps'][i]);
+        }
+        print("V2: Loaded splits from file, online: " + result.isOnline + ", time: " + result.time + ", cp count: " + result.cps.Length);
         return result;
     }
 
