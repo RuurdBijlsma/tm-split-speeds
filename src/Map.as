@@ -14,7 +14,7 @@ namespace Map {
     uint GetMapPB() {
         uint pb = 0;
 
-        if(IO::FileExists(FilePath)) {
+        if(mapId != "" && IO::FileExists(FilePath)) {
             // First try get PB from speedsplit file:
             @pbRecord = SpeedRecording::FromFile(FilePath);
             pb = pbRecord.time;
@@ -46,7 +46,11 @@ namespace Map {
 
 #endif
 
+#if TMNEXT || MP4
         auto currentMapId = GetApp().RootMap.MapInfo.MapUid;
+#elif TURBO
+        auto currentMapId = GetApp().Challenge.MapInfo.MapUid;
+#endif
         if(mapId == currentMapId) return;
 
         // Map switch
@@ -102,6 +106,7 @@ namespace Map {
     }
 
     void HandleFinish(uint time, bool isOnline) {
+        if(mapId == "") return;
         currentRecord.time = time;
         currentRecord.isOnline = isOnline;
         auto isPB = time <= currentPB || currentPB == 0;

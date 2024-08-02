@@ -34,6 +34,7 @@ namespace Waypoint {
 #elif TURBO
 
 		/* Detect checkpoints */
+		auto playground = GetApp().CurrentPlayground;
 		auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
 		if(player.CurLap.Checkpoints.Length != _curCP) {
 			Map::HandleCheckpoint();
