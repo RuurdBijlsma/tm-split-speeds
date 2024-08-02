@@ -13,14 +13,15 @@ namespace AdvSettings{
 
         UI::Separator();
 
-        if (Map::pbRecord is null || Map::mapId == "") {
-            UI::TextWrapped("MAP: " + Map::mapId);
+        UI::TextWrapped("Map UID: " + Map::mapId);
+
+        if (Map::mapId == "") {
             UI::TextWrapped("No map speeds loaded.");
             return;
         }
 
-        UI::TextWrapped("Map UID: " + Map::mapId);
         DrawSpeedRecDebug("Current Speeds", Map::currentRecord);
+        DrawSpeedRecDebug("Unfinished Speeds", Map::unfinishedRun);
         DrawSpeedRecDebug("Session Record", Map::sessionRecord);
         DrawSpeedRecDebug("PB Record", Map::pbRecord);
     }

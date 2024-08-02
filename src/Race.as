@@ -81,12 +81,47 @@ namespace Race {
 		if (sequence != CGamePlaygroundUIConfig::EUISequence::Finish)
 			finishHandled = false;
 
+#elif TURBO
+		// Check for run start
+
+		auto playground = cast<CGamePlayground@>(GetApp().CurrentPlayground);
+		if(playground is null) return;
+		if(playground.GameTerminals.Length == 0) return;
+		auto terminal = playground.GameTerminals[0];
+		if(terminal is null) return;
+		auto player = cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
+
+		auto raceState = player.RaceState;
+		if(raceState == CTrackManiaPlayer::ERaceState::Running && !retireHandled) {
+			print("Start!");
+			Map::HandleRunStart();
+			retireHandled = true;
+		} else if(retireHandled && raceState != CTrackManiaPlayer::ERaceState::Running) {
+			retireHandled = false;
+		}
+
+		// Check for run finish
+
+		auto prevRecord = playground.PrevReplayRecord;
+		if(prevRecord !is null && prevRecord.Ghosts.Length > 0) {
+			auto ghost = prevRecord.Ghosts[0];
+			if(player.RaceState == CTrackManiaPlayer::ERaceState::Finished
+				&& lastPrevRaceTime != player.Score.LastRaceTime) {
+				lastPrevRaceTime = player.Score.LastRaceTime;
+				if(lastPrevRaceTime < 3000000000) {
+					print("Finish!: " + lastPrevRaceTime);
+					Map::HandleFinish(lastPrevRaceTime, false);
+				}
+			}
+		}
+
 #elif MP4
 		// Check for run start
 
 		auto app = cast<CTrackMania@>(GetApp());
 		auto playground = cast<CGamePlayground@>(app.CurrentPlayground);
 		if(playground is null) return;
+		if(playground.GameTerminals.Length == 0) return;
 		auto terminal = playground.GameTerminals[0];
 		if(terminal is null) return;
 		auto player = cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
