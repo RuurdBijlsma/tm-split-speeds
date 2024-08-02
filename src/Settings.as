@@ -37,6 +37,9 @@ bool showSplitDecimal = false;
 [Setting name="Use world speed instead of front speed" category="General" description="World speed takes into account your sideways speed, it is more accurate when drifting or sliding sideways"]
 bool useWorldSpeed = true;
 
+[Setting name="Use unfinished runs" category="General" description="When there is no finished run (PB or Session) yet, use the furthest unfinished run"]
+bool useUnfinishedRuns = true;
+
 
 #if MP4
 
