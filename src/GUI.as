@@ -18,12 +18,12 @@ namespace GUI {
     string speedText = "";
 
     void Main() {
-	    font = nvg::LoadFont("Oswald-Regular.ttf");
+        font = nvg::LoadFont("Oswald-Regular.ttf");
     }
 
     void Render() {
-        if(Detector::DetectInMenu()) return;
-        if(nativeColours) {
+        if (Detector::DetectInMenu()) return;
+        if (nativeColours) {
             fasterColour = vec4(0, .123, .822, .75);
             slowerColour = vec4(.869, 0.117, 0.117, .784);
         }
@@ -31,27 +31,27 @@ namespace GUI {
         // showTime is the time when the ui element was shown
         visible = Time::Now < showTime + 3000;
         diffText = Text::Format(showSplitDecimal ? "%.1f" : "%.0f", difference);
-        if(difference < (showSplitDecimal ? 0.1 : 1) && difference > (showSplitDecimal ? -0.1 : -1))
+        if (difference < (showSplitDecimal ? 0.1 : 1) && difference > (showSplitDecimal ? -0.1 : -1))
             diffText = '0';
         speedText = Text::Format(showSpeedDecimal ? "%.1f" : "%.0f", currentSpeed);
         currentColour = sameSpeedColour;
-        if(difference > (showSplitDecimal ? 0.1 : 1)) currentColour = fasterColour;
-        else if(difference < (showSplitDecimal ? -0.1 : -1)) currentColour = slowerColour;
-    
-        if(!UI::IsGameUIVisible() && !showWhenGuiHidden)
+        if (difference > (showSplitDecimal ? 0.1 : 1)) currentColour = fasterColour;
+        else if (difference < (showSplitDecimal ? -0.1 : -1)) currentColour = slowerColour;
+
+        if (!UI::IsGameUIVisible() && !showWhenGuiHidden)
             return;
 
-        if(font == 0) return;
-        if(!enabled) return;
-        if(!visible) return;
+        if (font == 0) return;
+        if (!enabled) return;
+        if (!visible) return;
 
         float h = float(Draw::GetHeight());
         float w = float(Draw::GetWidth());
         // if h or w is 0, game is minimized
-        if(h == 0) return;
-        if(w == 0) return;
+        if (h == 0) return;
+        if (w == 0) return;
         float scaleX, scaleY, offsetX = 0;
-        if(w / h > 16. / 9) {
+        if (w / h > 16. / 9) {
             auto correctedW = (h / 9.) * 16;
             scaleX = correctedW / 2560;
             scaleY = h / 1440;
@@ -88,7 +88,7 @@ namespace GUI {
 
         int denseAdjustment = 0;
         uint textOffsetY = 3;
-        if(denseUI) {
+        if (denseUI) {
             boxHeight = uint(scale * 40);
             textOffsetY = 3;
             y += 17;
@@ -96,11 +96,11 @@ namespace GUI {
         }
 
         // Draw current speed
-        if(showCurrentSpeed) {
+        if (showCurrentSpeed) {
             auto charSurplus = Math::Max(0, speedText.Length - 3);
             nvg::FontSize(scale * (fontSize + denseAdjustment - charSurplus * 2.75));
             auto padding1 = padding - charSurplus * 1.5;
-            if(denseUI) {
+            if (denseUI) {
                 padding1 += 6;
             }
 
@@ -114,7 +114,7 @@ namespace GUI {
             nvg::TextAlign(nvg::Align::Left | nvg::Align::Middle);
 
 
-            if(textShadow){
+            if (textShadow) {
                 nvg::FillColor(shadowColour);
                 nvg::TextBox(x + padding1 - box1Width + shadowX, y + boxHeight / 2 + shadowY + textOffsetY, box1Width, speedText);
             }
@@ -129,11 +129,11 @@ namespace GUI {
 #elif MP4
         int marginBetween = 3;
 #endif
-        if(showSpeedDiff && hasDiff) {
+        if (showSpeedDiff && hasDiff) {
             auto charSurplus = Math::Max(0, diffText.Length - 4);
             nvg::FontSize(scale * (fontSize + denseAdjustment - charSurplus * 2.75));
             padding -= int(charSurplus * 2.5);
-            if(denseUI) {
+            if (denseUI) {
                 padding += 6;
             }
 
@@ -146,7 +146,7 @@ namespace GUI {
             // Draw text
             nvg::TextAlign(nvg::Align::Right | nvg::Align::Middle);
 
-            if(textShadow) {
+            if (textShadow) {
                 nvg::FillColor(shadowColour);
                 nvg::TextBox(marginBetween + x - padding + shadowX, y + boxHeight / 2 + shadowY + textOffsetY, box2Width, diffText);
             }
