@@ -77,11 +77,11 @@ namespace Database {
         Json::Value@[] maps;
 
         for (uint i = 0; i < files.Length; i++) {
-            if (files[i].EndsWith(".json")) {
+            if (Path::GetExtension(files[i]) == ".json") {
                 try {
                     @map = Json::FromFile(files[i]);
                     map["lastSaved"] = IO::FileModifiedTime(files[i]);
-                    map["mapUid"] = files[i].Replace(storageFolder, "").Replace(".json", "");
+                    map["mapUid"] = Path::GetFileNameWithoutExtension(files[i]);
                     maps.InsertLast(map);
                 } catch {
                     error("bad json file: " + files[i]);
@@ -202,6 +202,20 @@ namespace Database {
             db.Execute("REPLACE INTO " + tableName + " (cps, isOnline, lastSaved, mapUid, time, version) VALUES " + groups[i]);
             trace("executed db statement " + (i + 1) + " / " + groups.Length);
             yield();
+        }
+
+        print("moving old files...");
+        const string oldFolder = IO::FromStorageFolder("old/");
+        if (!IO::FolderExists(oldFolder)) {
+            IO::CreateFolder(oldFolder);
+        }
+        for (uint i = 0; i < files.Length; i++) {
+            if (i % 100 == 0) {
+                yield();
+            }
+            if (Path::GetExtension(files[i]) == ".json" && IO::FileExists(files[i])) {
+                IO::Move(files[i], oldFolder + Path::GetFileName(files[i]));
+            }
         }
 
         migrated = true;
