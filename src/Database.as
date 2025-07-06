@@ -143,8 +143,7 @@ namespace Database {
                     }
 
                     case 1:
-                    case 2:
-                    case 3: {
+                    case 2: {
                         try {
                             for (uint j = 0; j < maps[i]["cps"].Length; j++) {
                                 maps[i]["cps"][j] = Math::Round(float(maps[i]["cps"][j]), 3);
