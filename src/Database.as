@@ -258,7 +258,7 @@ namespace Database {
             const uint version = s.GetColumnInt("version");
 
 #if MP4
-            if (version < 2 && RootMap.TMObjective_NbLaps > 1) {
+            if (version < 2 && GetApp().RootMap.TMObjective_NbLaps > 1) {
                 print("Old splits version on MultiLap map found! Deleting splits for this map.");
                 Delete(uid);
                 return null;
