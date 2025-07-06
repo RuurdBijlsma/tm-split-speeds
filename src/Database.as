@@ -8,7 +8,6 @@ namespace Database {
         cps       TEXT,
         isOnline  BOOL,
         lastSaved INT,
-        mapName   TEXT,
         mapUid    VARCHAR(27) PRIMARY KEY,
         time      INT,
         version   INT
@@ -144,7 +143,8 @@ namespace Database {
                     }
 
                     case 1:
-                    case 2: {
+                    case 2:
+                    case 3: {
                         try {
                             for (uint j = 0; j < maps[i]["cps"].Length; j++) {
                                 maps[i]["cps"][j] = Math::Round(float(maps[i]["cps"][j]), 3);
@@ -205,7 +205,7 @@ namespace Database {
             yield();
         }
 
-        // migrated = true;  // uncomment when testing is done
+        migrated = true;
         migrating = false;
         msg = "migration done!";
         print(msg);
@@ -302,7 +302,7 @@ namespace Database {
             statement += Time::Stamp + ",";  // lastSaved
             statement +=  "'" + uid + "',";
             statement += result.time + ",";
-            statement += 2 + ")";  // version
+            statement += 3 + ")";  // version
 
             db.Execute(statement);
 
