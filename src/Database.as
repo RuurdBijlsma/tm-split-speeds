@@ -281,4 +281,33 @@ namespace Database {
             return null;
         }
     }
+
+    void Write(SpeedRecording@ result, const string&in uid) {
+        if (result is null) {
+            return;
+        }
+
+        print("ToFile! time: " + result.time + ", " + uid);
+
+        SQLite::Database@ db = Get();
+        try {
+            string statement = "REPLACE INTO " + tableName + "(cps, isOnline, lastSaved, mapUid, time, version) VALUES (";
+
+            auto cps = Json::Array();
+            for (uint i = 0; i < result.cps.Length; i++) {
+                cps.Add(Math::Round(result.cps[i], 3));
+            }
+            statement += "'" + Json::Write(cps) + "',";
+            statement += result.isOnline ? "1," : "0,";
+            statement += Time::Stamp + ",";  // lastSaved
+            statement +=  "'" + uid + "',";
+            statement += result.time + ",";
+            statement += 2 + ")";  // version
+
+            db.Execute(statement);
+
+        } catch {
+            error("error writing to database: " + result.ToString() + ", " + getExceptionInfo());
+        }
+    }
 }

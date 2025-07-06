@@ -8,10 +8,6 @@ namespace Map {
     uint sessionPB = 0;
     uint currentPB = 0;
 
-    string get_FilePath() {
-        return IO::FromStorageFolder(mapId + ".json");
-    }
-
     uint GetMapPB() {
         uint pb = 0;
 
@@ -183,7 +179,7 @@ namespace Map {
 
         if(isPB) {
             currentPB = time;
-            currentRecord.ToFile(FilePath);
+            Database::Write(currentRecord, mapId);
             @pbRecord = currentRecord;
             @unfinishedRun = null;
         }
