@@ -195,8 +195,7 @@ namespace Map {
     }
 
     void ClearPB() {
-        print("Deleting pb: " + FilePath);
-        IO::Delete(FilePath);
+        Database::Delete(mapId);
         @pbRecord = null;
         @sessionRecord = null;
         @unfinishedRun = null;

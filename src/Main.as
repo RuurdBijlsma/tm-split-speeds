@@ -4,6 +4,7 @@
 
 
 void Main() {
+    Database::Init();
     GUI::Main();
     Map::Main();
 }

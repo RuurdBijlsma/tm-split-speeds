@@ -5,8 +5,7 @@ namespace AdvSettings{
             Map::ClearPB();
         }
         if (UI::Button("Clear all stored pb speeds")) {
-            if (IO::FolderExists(IO::FromStorageFolder('')))
-                startnew(DeleteFiles);
+            Database::Clear();
             Map::ClearPB();
             UI::ShowNotification("Cleared pb speeds for all maps", 5000);
         }
@@ -34,16 +33,5 @@ namespace AdvSettings{
         } else {
             UI::Text("null");
         }
-    }
-
-    void DeleteFiles() {
-        string folder = IO::FromStorageFolder('');
-        auto files = IO::IndexFolder(folder, true);
-        for (uint i = 0; i < files.Length; i++) {
-            IO::Delete(files[i]);
-            if (i % 50 == 0)
-                sleep(10);
-        }
-        print("Deleted all SplitSpeeds files");
     }
 }
