@@ -76,6 +76,9 @@ namespace Database {
         Json::Value@ map;
         Json::Value@[] maps;
 
+        uint64 now = Time::Now;
+        uint64 lastYield = now;
+
         for (uint i = 0; i < files.Length; i++) {
             if (Path::GetExtension(files[i]) == ".json") {
                 try {
@@ -88,8 +91,9 @@ namespace Database {
                 }
             }
 
-            if (i > 0 && i % 100 == 0) {
-                trace("read json file " + i + " / " + files.Length);
+            if ((now = Time::Now) - lastYield > 50) {
+                trace("read json file " + (i + 1) + " / " + files.Length);
+                lastYield = now;
                 yield();
             }
         }
@@ -209,12 +213,18 @@ namespace Database {
         if (!IO::FolderExists(oldFolder)) {
             IO::CreateFolder(oldFolder);
         }
+
+        lastYield = now = Time::Now;
+
         for (uint i = 0; i < files.Length; i++) {
-            if (i % 100 == 0) {
-                yield();
-            }
             if (Path::GetExtension(files[i]) == ".json" && IO::FileExists(files[i])) {
                 IO::Move(files[i], oldFolder + Path::GetFileName(files[i]));
+            }
+
+            if ((now = Time::Now) - lastYield > 50) {
+                trace("moved json file " + (i + 1) + " / " + files.Length);
+                lastYield = now;
+                yield();
             }
         }
 
