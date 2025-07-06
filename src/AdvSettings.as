@@ -1,14 +1,23 @@
+bool unlockButtons = false;
+
 namespace AdvSettings{
     void Render() {
+        unlockButtons = UI::Checkbox("Unlock buttons to clear speeds", unlockButtons);
+        UI::BeginDisabled(!unlockButtons);
+        UI::BeginDisabled(Map::pbRecord is null);
         if (UI::Button("Clear current map pb speeds")) {
-            UI::ShowNotification("Cleared pb speeds for current map", 5000);
             Map::ClearPB();
+            UI::ShowNotification("Cleared pb speeds for current map", 5000);
+            unlockButtons = false;
         }
+        UI::EndDisabled();
         if (UI::Button("Clear all stored pb speeds")) {
             Database::Clear();
             Map::ClearPB();
             UI::ShowNotification("Cleared pb speeds for all maps", 5000);
+            unlockButtons = false;
         }
+        UI::EndDisabled();
 
         UI::Separator();
 
