@@ -230,13 +230,16 @@ namespace Database {
         SQLite::Statement@ s;
 
         try {
-            @s = db.Prepare("SELECT * FROM " + tableName + " WHERE mapUid = " + uid);
+            @s = db.Prepare("SELECT * FROM " + tableName + " WHERE mapUid = '" + uid + "'");
         } catch {
-            error("error reading database for map '" + uid + "'");
+            error("error reading database for map '" + uid + "': " + getExceptionInfo());
             return null;
         }
 
-        s.NextRow();
+        if (!s.NextRow()) {
+            return null;
+        }
+
         auto result = SpeedRecording();
         try {
             const uint version = s.GetColumnInt("version");
