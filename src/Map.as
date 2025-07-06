@@ -19,7 +19,7 @@ namespace Map {
             return pb;
         }
 
-        @pbRecord = SpeedRecording::FromFile(FilePath);
+        @pbRecord = Database::Read(mapId);
         if(pbRecord !is null) {
             // First try get PB from speedsplit file:
             pb = pbRecord.time;
