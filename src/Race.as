@@ -126,26 +126,28 @@ namespace Race {
         if (terminal is null) return;
         auto player = cast<CTrackManiaPlayer@>(terminal.ControlledPlayer);
 
-        auto scriptPlayer = player.ScriptAPI;
-        auto raceState = scriptPlayer.RaceState;
-        if (raceState == CTrackManiaPlayer::ERaceState::Running && !retireHandled) {
-            print("Start!");
-            Map::HandleRunStart();
-            retireHandled = true;
-        } else if (retireHandled && raceState != CTrackManiaPlayer::ERaceState::Running) {
-            retireHandled = false;
-        }
+        if (player !is null) {
+            auto scriptPlayer = player.ScriptAPI;
+            auto raceState = scriptPlayer.RaceState;
+            if (raceState == CTrackManiaPlayer::ERaceState::Running && !retireHandled) {
+                print("Start!");
+                Map::HandleRunStart();
+                retireHandled = true;
+            } else if (retireHandled && raceState != CTrackManiaPlayer::ERaceState::Running) {
+                retireHandled = false;
+            }
 
-        // Check for run finish
+            // Check for run finish
 
-        auto prevRecord = playground.PrevReplayRecord;
-        if (prevRecord !is null && prevRecord.Ghosts.Length > 0) {
-            auto ghost = prevRecord.Ghosts[0];
-            if (ghost.RaceTime != lastPrevRaceTime) {
-                lastPrevRaceTime = ghost.RaceTime;
-                if (lastPrevRaceTime < 3000000000) {
-                    print("Finish!: " + ghost.RaceTime);
-                    Map::HandleFinish(ghost.RaceTime, false);
+            auto prevRecord = playground.PrevReplayRecord;
+            if (prevRecord !is null && prevRecord.Ghosts.Length > 0) {
+                auto ghost = prevRecord.Ghosts[0];
+                if (ghost.RaceTime != lastPrevRaceTime) {
+                    lastPrevRaceTime = ghost.RaceTime;
+                    if (lastPrevRaceTime < 3000000000) {
+                        print("Finish!: " + ghost.RaceTime);
+                        Map::HandleFinish(ghost.RaceTime, false);
+                    }
                 }
             }
         }
