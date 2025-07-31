@@ -25,7 +25,7 @@ namespace Ghost {
     uint GetPB() {
         uint pb = 0;
         auto playgroundScript = cast<CSmArenaRulesMode@>(GetApp().PlaygroundScript);
-        if (playgroundScript !is null) {
+        if (playgroundScript !is null && playgroundScript.DataFileMgr !is null) {
             auto ghosts = playgroundScript.DataFileMgr.Ghosts;
             CGameGhostScript@ ghost = null;
             for (uint i = 0; i < ghosts.Length; i++) {
