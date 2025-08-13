@@ -90,7 +90,7 @@ namespace Ghost {
         if (playground.PlayerRecordedGhost !is null) {
             time = playground.PlayerRecordedGhost.RaceTime;
         }
-        // print("JFDJFJDFJDFJDFJ");
+
         if (app.PlaygroundScript !is null) {
             auto ghosts = app.PlaygroundScript.DataFileMgr.Ghosts;
             for (uint i = 0; i < ghosts.Length; i++) {

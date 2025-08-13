@@ -3,9 +3,8 @@ name = "Split Speeds"
 author = "RuteNL"
 category = "Overlay"
 siteid = 145
-
-version = "2.0.3"
+version = "2.2.0"
 
 [script]
-dependencies = ["VehicleState"]
+dependencies = [ "VehicleState" ]
 exports = [ "src/Exports/SplitSpeedsExports.as" ]
