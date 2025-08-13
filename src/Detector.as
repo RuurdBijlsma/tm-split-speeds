@@ -39,6 +39,16 @@ namespace Detector {
             || cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer) is null) {
             return false;
         }
+
+        // there might be a better way to detect test mode vs validation mode but this works
+        auto Editor = cast<CGameCtnEditorFree>(GetApp().Editor);
+        if (Editor !is null) {
+            auto PMT = cast<CSmEditorPluginMapType>(Editor.PluginMapType);
+            if (PMT !is null && PMT.Mode !is null && PMT.Mode.ClientManiaAppUrl.Contains("RaceTest")) {
+                return false;
+            }
+        }
+
         auto player = cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer);
         auto scriptPlayer = cast<CSmPlayer>(playground.GameTerminals[0].GUIPlayer).ScriptAPI;
         if (player is null || scriptPlayer is null || player.CurrentLaunchedRespawnLandmarkIndex == uint(-1)) {
@@ -56,6 +66,9 @@ namespace Detector {
             || cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer) is null) {
             return false;
         }
+
+        // in editor test mode (classic trackbuilder), it's unclear how to differentiate from validation mode
+
         auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].ControlledPlayer);
         if (player is null
             || player.CurLap is null
@@ -74,6 +87,9 @@ namespace Detector {
             || cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer) is null) {
             return false;
         }
+
+        // in editor test mode, playground is a CTrackManiaRace1P so this is handled already
+
         auto scriptPlayer = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer).ScriptAPI;
         if (scriptPlayer is null
             || scriptPlayer.CurLap is null

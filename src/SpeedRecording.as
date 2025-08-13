@@ -19,7 +19,7 @@ class SpeedRecording {
             speeds["cps"].Add(cps[i]);
         }
 
-        Json::ToFile(path, speeds);
+        Json::ToFile(path, speeds, true);
     }
 
     string ToString() {

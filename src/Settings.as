@@ -43,7 +43,7 @@ bool useUnfinishedRuns = true;
 
 #if MP4
 
-[Setting color name="Use different anchor position for online" category="UI"]
+[Setting name="Use different anchor position for online" category="UI"]
 bool useOnlinePos = true;
 
 [Setting name="UI Scale" min=0.1 max=2 category="UI"]
