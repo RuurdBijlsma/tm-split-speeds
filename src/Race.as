@@ -17,12 +17,13 @@ namespace Race {
         auto scriptPlayer = player is null ? null : cast<CSmScriptPlayer>(player.ScriptAPI);
         auto playgroundScript = cast<CSmArenaRulesMode@>(GetApp().PlaygroundScript);
 
-        if (playgroundScript is null)
+        if (playgroundScript is null) {
             // Online
             return GetApp().Network.PlaygroundClientScriptAPI.GameTime - scriptPlayer.StartTime;
-        else
+        } else {
             // Solo
             return playgroundScript.Now - scriptPlayer.StartTime;
+        }
     }
 #endif
 
@@ -52,12 +53,13 @@ namespace Race {
         if (sequence == CGamePlaygroundUIConfig::EUISequence::Finish && !finishHandled) {
             finishHandled = true;
 
-            if (playgroundScript !is null)
+            if (playgroundScript !is null) {
                 // Solo
                 timeCheckTicks = 5;
-            else
+            } else {
                 // Online
                 timeCheckTicks = 0;
+            }
             // If last ghost isn't loaded, or player is online, use running time instead of ghosts
             lastRaceTime = GetRunningTime();
             // print("ESTIMATED FINISH TIME: " + lastRaceTime);

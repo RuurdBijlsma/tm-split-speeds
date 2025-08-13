@@ -1,11 +1,11 @@
 class SpeedRecording {
 
-    float[]@ cps = {};
+    float[]@ cps = { };
     uint lastCpTime = 0; // Only used for unfinished runs and not written to file
     uint time = 0;
     bool isOnline = false;
 
-    void ToFile(const string &in path) {
+    void ToFile(const string&in path) {
         print("ToFile! time: " + time + ", " + path);
         Json::Value speeds = Json::Object();
 
@@ -23,7 +23,7 @@ class SpeedRecording {
     }
 
     string ToString() {
-        string[] cpsStr = {};
+        string[] cpsStr = { };
         for (uint i = 0; i < cps.Length; i++) {
             cpsStr.InsertLast(tostring(cps[i]));
         }
@@ -31,7 +31,7 @@ class SpeedRecording {
     }
 
     void DrawDebugInfo() {
-        string[] cpsStr = {};
+        string[] cpsStr = { };
         for (uint i = 0; i < cps.Length; i++) {
             cpsStr.InsertLast(tostring(cps[i]));
         }
@@ -42,7 +42,7 @@ class SpeedRecording {
 
 namespace SpeedRecording {
 
-    SpeedRecording@ FromFile(const string &in path) {
+    SpeedRecording@ FromFile(const string&in path) {
         if (!IO::FileExists(path)) return null;
         if (path == ".json") return null;
         auto json = Json::FromFile(path);

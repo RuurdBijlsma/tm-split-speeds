@@ -1,6 +1,6 @@
 bool unlockButtons = false;
 
-namespace AdvSettings{
+namespace AdvSettings {
     void Render() {
         unlockButtons = UI::Checkbox("Unlock buttons to clear speeds", unlockButtons);
         UI::BeginDisabled(!unlockButtons);
@@ -35,7 +35,7 @@ namespace AdvSettings{
         DrawSpeedRecDebug("PB Record", Map::pbRecord);
     }
 
-    void DrawSpeedRecDebug(const string &in name, SpeedRecording@ sr) {
+    void DrawSpeedRecDebug(const string&in name, SpeedRecording@ sr) {
         UI::Text(name + ": ");
         UI::SameLine();
         if (sr !is null) {

@@ -40,7 +40,6 @@ bool useWorldSpeed = true;
 [Setting name="Use unfinished runs" category="General" description="When there is no finished run (PB or Session) yet, use the furthest unfinished run"]
 bool useUnfinishedRuns = true;
 
-
 #if MP4
 
 [Setting name="Use different anchor position for online" category="UI"]

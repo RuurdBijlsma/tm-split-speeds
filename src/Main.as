@@ -1,8 +1,3 @@
-// TODO
-// Test other games
-// edit campaign map is stuk ofzo? sometimes n editor validation of maps that are/are modified campaign maps, the split will save as 0
-
-
 void Main() {
     GUI::Main();
     Map::Main();

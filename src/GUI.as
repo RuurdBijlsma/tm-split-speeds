@@ -35,8 +35,11 @@ namespace GUI {
             diffText = '0';
         speedText = Text::Format(showSpeedDecimal ? "%.1f" : "%.0f", currentSpeed);
         currentColour = sameSpeedColour;
-        if (difference > (showSplitDecimal ? 0.1 : 1)) currentColour = fasterColour;
-        else if (difference < (showSplitDecimal ? -0.1 : -1)) currentColour = slowerColour;
+        if (difference > (showSplitDecimal ? 0.1 : 1)) {
+            currentColour = fasterColour;
+        } else if (difference < (showSplitDecimal ? -0.1 : -1)) {
+            currentColour = slowerColour;
+        }
 
         if (!UI::IsGameUIVisible() && !showWhenGuiHidden)
             return;
@@ -112,7 +115,6 @@ namespace GUI {
             nvg::ClosePath();
             // Draw text
             nvg::TextAlign(nvg::Align::Left | nvg::Align::Middle);
-
 
             if (textShadow) {
                 nvg::FillColor(shadowColour);
