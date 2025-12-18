@@ -12,6 +12,79 @@ namespace Map {
         return IO::FromStorageFolder(mapId + ".json");
     }
 
+#if MP4
+    string _Mp4_Vehicle() {
+        if (!Detector::InGame) {
+            return "";
+        }
+
+        auto networkPlayerModelId = GetApp().Network.PlaygroundClientScriptAPI.SettingsPlayerModelId.GetName();
+        auto vehicles = Regex::Search(networkPlayerModelId, "\\w+Car");
+
+        if (vehicles.Length != 1) {
+            warn("Failed to parse vehicle from (" + networkPlayerModelId + ") for map with EnviMix and car-swapping! ");
+            return "";
+        }
+        return vehicles[0];
+    }
+
+    string _Mp4_MapId() {
+        if (!Detector::InGame) {
+            return mapId;
+        }
+
+        auto currentMapId = GetApp().RootMap.MapInfo.MapUid;
+        auto currentMapEnvi = GetApp().RootMap.MapInfo.CollectionName;
+        auto currentMapVehicleName = GetApp().RootMap.VehicleName.GetName();
+        auto networkPlayerModelId = GetApp().Network.PlaygroundClientScriptAPI.SettingsPlayerModelId.GetName();
+
+        // Default car for environment (no EnviMix)
+        if (currentMapVehicleName == "Unassigned"
+            && networkPlayerModelId.EndsWith("Car")
+            && currentMapEnvi == Regex::Replace(networkPlayerModelId, "Car$", "")) {
+            if (mapId != currentMapId) {
+                trace("Normal map (" + networkPlayerModelId + "): " + currentMapId);
+            }
+            return currentMapId;
+        }
+
+        // EnviMix with the car used to validate the map
+        if (currentMapVehicleName != "Unassigned"
+            && currentMapVehicleName == networkPlayerModelId) {
+            if (mapId != currentMapId) {
+                trace("EnviMix without car-swapping (" + currentMapVehicleName + "): " + currentMapId);
+            }
+            return currentMapId;
+        }
+
+        // EnviMix with car-swapping
+        auto pgScript = cast<CTrackManiaRaceRules>(GetApp().PlaygroundScript);
+        auto forceModelId = pgScript.Players[0].ForceModelId.GetName();
+        auto vehicle = _Mp4_Vehicle();
+        auto currentMapIdWithCarSwapping = currentMapId + "-" + vehicle;
+
+        if (forceModelId == "Unassigned") {
+            if (mapId != currentMapIdWithCarSwapping) {
+                warn("Should be car-swapping but forceModelId (" + forceModelId + ") is not used!");
+            }
+        } else {
+            if (mapId != currentMapIdWithCarSwapping) {
+                print("EnviMix wit car-swapping (" + networkPlayerModelId + "): " + currentMapIdWithCarSwapping);
+            }
+        }
+
+        // if (mapId != currentMapIdWithCarSwapping) {
+        //     trace("currentMapEnvi: " + currentMapEnvi);
+        //     trace("currentMapVehicleName: " + currentMapVehicleName);
+        //     trace("networkPlayerModelId: " + networkPlayerModelId);
+        //     trace("forceModelId: " + forceModelId);
+        //     trace("currentMapIdWithEnviMix: " + currentMapIdWithCarSwapping);
+        // }
+
+        return currentMapIdWithCarSwapping;
+    }
+#endif
+
     uint GetMapPB() {
         uint pb = 0;
 
@@ -99,8 +172,10 @@ namespace Map {
 
 #endif
 
-#if TMNEXT || MP4
+#if TMNEXT
         auto currentMapId = GetApp().RootMap.MapInfo.MapUid;
+#elif MP4
+        auto currentMapId =  _Mp4_MapId();
 #elif TURBO
         auto currentMapId = GetApp().Challenge.MapInfo.MapUid;
 #endif
