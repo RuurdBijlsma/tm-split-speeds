@@ -69,7 +69,7 @@ namespace Map {
             }
         } else {
             if (mapId != currentMapIdWithCarSwapping) {
-                print("EnviMix wit car-swapping (" + networkPlayerModelId + "): " + currentMapIdWithCarSwapping);
+                print("EnviMix with car-swapping (" + networkPlayerModelId + "): " + currentMapIdWithCarSwapping);
             }
         }
 
