@@ -73,14 +73,6 @@ namespace Map {
             }
         }
 
-        // if (mapId != currentMapIdWithCarSwapping) {
-        //     trace("currentMapEnvi: " + currentMapEnvi);
-        //     trace("currentMapVehicleName: " + currentMapVehicleName);
-        //     trace("networkPlayerModelId: " + networkPlayerModelId);
-        //     trace("forceModelId: " + forceModelId);
-        //     trace("currentMapIdWithEnviMix: " + currentMapIdWithCarSwapping);
-        // }
-
         return currentMapIdWithCarSwapping;
     }
 #endif
