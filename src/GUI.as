@@ -48,8 +48,8 @@ namespace GUI {
         if (!enabled) return;
         if (!visible) return;
 
-        float h = float(Draw::GetHeight());
-        float w = float(Draw::GetWidth());
+        float h = float(Display::GetHeight());
+        float w = float(Display::GetWidth());
         // if h or w is 0, game is minimized
         if (h == 0) return;
         if (w == 0) return;
