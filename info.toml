@@ -3,7 +3,7 @@ name = "Split Speeds"
 author = "RuteNL"
 category = "Overlay"
 siteid = 145
-version = "2.2.1"
+version = "2.2.3"
 
 [script]
 dependencies = [ "VehicleState" ]
