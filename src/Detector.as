@@ -79,7 +79,7 @@ namespace Detector {
 #elif MP4
 
         // Check if we're in game
-        auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
+        auto playground = GetApp().CurrentPlayground;
         auto rootMap = GetApp().RootMap;
         if (playground is null
             || rootMap is null
