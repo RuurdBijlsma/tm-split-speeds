@@ -54,7 +54,7 @@ namespace Waypoint {
 #elif MP4
 
         /* Detect checkpoints */
-        auto playground = cast<CTrackManiaRaceNew>(GetApp().CurrentPlayground);
+        auto playground = GetApp().CurrentPlayground;
         if (playground.GameTerminals.Length == 0) return;
         auto player = cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer);
         uint currentLap = player.CurrentNbLaps;
