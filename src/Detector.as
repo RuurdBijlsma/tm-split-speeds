@@ -26,11 +26,16 @@ namespace Detector {
     bool DetectInGame() {
 #if TMNEXT
 
+        array<string> supportedMapTypes = {
+            "TrackMania\\TM_Race"
+        };
+
         // Check if we're in game
         auto playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
         if (playground is null
             || playground.Arena is null
             || playground.Map is null
+            || supportedMapTypes.Find(playground.Map.MapType) == -1
             || playground.GameTerminals.Length <= 0
             || (
                 playground.GameTerminals[0].UISequence_Current != CGamePlaygroundUIConfig::EUISequence::Playing
@@ -78,11 +83,17 @@ namespace Detector {
 
 #elif MP4
 
+        array<string> supportedMapTypes = {
+            "Race",
+            "TrackMania\\Race"
+        };
+
         // Check if we're in game
         auto playground = GetApp().CurrentPlayground;
         auto rootMap = GetApp().RootMap;
         if (playground is null
             || rootMap is null
+            || supportedMapTypes.Find(rootMap.MapType) == -1
             || playground.GameTerminals.Length <= 0
             || cast<CTrackManiaPlayer>(playground.GameTerminals[0].GUIPlayer) is null) {
             return false;
